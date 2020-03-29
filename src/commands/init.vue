@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import ClusterGenerator from './../game/ClusterGenerator'
 export default {
   name: "init",
   methods: {
@@ -21,6 +22,8 @@ export default {
   },
   mounted() {
     this.$nextTick(function() {
+      let clusterGenerator = new ClusterGenerator(this.$_arguments["seed"])
+      console.log(clusterGenerator.generate())
       this.leave();
     });
   }

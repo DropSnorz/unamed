@@ -7,7 +7,7 @@ class ClusterGenerator {
   }
 
   generate(){
-    let nConstellation = this.randomValues.randomGaussian(10,20,1);
+    let nConstellation = this.randomValues.randomGaussian(10,20,0);
     let constellations = []
 
     for(let i=0;i<nConstellation;i++) {

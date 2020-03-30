@@ -1,20 +1,11 @@
 <template>
-  <p>Init world using seed {{seed}}</p>
+  <p>Init world using seed {{ seed }}</p>
 </template>
 
 <script>
 import ClusterGenerator from './../game/ClusterGenerator'
 export default {
-  name: "init",
-  methods: {
-    leave() {
-      this.$_done();
-    },
-    execute(command) {
-      this.leave();
-      this.$_executeCommand(command);
-    }
-  },
+  name: "InitCommand",
   computed: {
     seed: function() {
       return this.$_arguments["seed"];
@@ -26,6 +17,19 @@ export default {
       console.log(clusterGenerator.generate())
       this.leave();
     });
-  }
+  },
+  methods: {
+    leave() {
+      this.$_done();
+    },
+    execute(command) {
+      this.leave();
+      this.$_executeCommand(command);
+    }
+  },
 };
 </script>
+
+<style scoped>
+
+</style>

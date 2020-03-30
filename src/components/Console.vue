@@ -23,7 +23,7 @@ export default {
   data: () => ({
     commands: {
       // yargs arguments
-      init: async () => (await import(`./../commands/init.vue`)).default,
+      init: async () => (await import(`./../commands/InitCommand.vue`)).default,
 
       help: () => `Usage: init [option]<br><br>
         Example: init --seed myCustomSeed

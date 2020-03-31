@@ -14,7 +14,8 @@ export default {
   mounted() {
     this.$nextTick(function() {
       let clusterGenerator = new ClusterGenerator(this.$_arguments["seed"])
-      console.log(clusterGenerator.generate())
+      let cluster = clusterGenerator.generate()
+      this.$store.dispatch('player/setCurrentSystem', cluster.constellations[0].systems[0].name)
       this.leave();
     });
   },

@@ -5,8 +5,8 @@
       :commands="commands"
       show-intro
       show-help
-      title="root@world"
-      prompt="root@world"
+      :title="prompt"
+      :prompt="prompt"
     />
   </div>
 </template>
@@ -29,7 +29,12 @@ export default {
         Example: init --seed myCustomSeed
       `
     }
-  })
+  }),
+  computed: {
+    prompt() {
+      return "root@" + this.$store.state.player.currentSystem + ":#";
+    },
+  },
 };
 </script>
 

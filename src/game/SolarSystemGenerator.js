@@ -6,13 +6,16 @@ class SolarSystemGenerator {
     this.constellation = constellation;
   }
 
-  generate(){
-    
-    return { name: this.createName()}
+  generate() {
+    return {
+      name: this.createName(),
+      constellationName: this.constellation.name,
+      constellation: this.constellation
+    }
   }
 
-  createName(){
-    return this.constellation.name + "-" + this.randomValues.random().toString(36).slice(-this.randomValues.random(3,4,0))
+  createName() {
+    return this.constellation.name + "-" + this.randomValues.random().toString(36).slice(-this.randomValues.random(3, 4, 0))
   }
 
 }

@@ -4,6 +4,11 @@ module.exports = {
     // 'eslint:recommended',
     'plugin:vue/vue3-recommended'
   ],
+  parserOptions: {
+    "parser": "babel-eslint",
+    "ecmaVersion": 2017,
+    "sourceType": "module"
+  },
   rules: {
     // override/add rules settings here, such as:
     'no-dupe-class-members': 'off'

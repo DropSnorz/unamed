@@ -9,8 +9,9 @@ class ConstellationGenerator {
   generate() {
     let constellation = {};
     constellation["name"] = this.createName();
+    constellation["paths"] = []
 
-    let nSystems = this.randomValues.randomGaussian(10, 30, 0);
+    let nSystems = this.randomValues.randomGaussian(2, 10, 0);
     let systems = [];
     constellation["systems"] = systems
 

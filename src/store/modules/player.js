@@ -10,7 +10,6 @@ const getters = {
 // actions
 const actions = {
   setCurrentSystem({ state, commit }, currentSystem) {
-    console.log(currentSystem)
     commit('setCurrentSystem', currentSystem)
   }
 }

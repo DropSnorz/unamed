@@ -1,7 +1,6 @@
 <template>
   <div style="height:100%;">
     <vue-command
-      :yargs-options="{ alias: { color: ['colour'] } }"
       :commands="commands"
       show-intro
       show-help
@@ -20,21 +19,34 @@ export default {
   components: {
     VueCommand
   },
-  data: () => ({
-    commands: {
-      // yargs arguments
-      init: async () => (await import(`./../commands/InitCommand.vue`)).default,
-
-      help: () => `Usage: init [option]<br><br>
-        Example: init --seed myCustomSeed
-      `
-    }
-  }),
   computed: {
-    prompt() {
-      return "root@" + this.$store.state.player.currentSystem + ":#";
+    commands() {
+      if (!this.$store.state.world.initiated) {
+        return {
+          // yargs arguments
+          init: async () =>
+            (await import(`./../commands/InitCommand.vue`)).default,
+          help: () => `Usage: init [option]<br><br>
+          Example: init --seed myCustomSeed
+          `
+        };
+      }
+      return {
+        // yargs arguments
+        scan: async () =>
+          (await import(`./../commands/ScanCommand.vue`)).default,
+        init: async () =>
+          (await import(`./../commands/InitCommand.vue`)).default,
+        help: () => `scan: Scan surrounding area<br><br>`
+      };
     },
-  },
+    prompt() {
+      if (this.$store.state.player.currentSystem) {
+        return "u@" + this.$store.state.player.currentSystem.name + ":#";
+      }
+      return "root@world";
+    }
+  }
 };
 </script>
 

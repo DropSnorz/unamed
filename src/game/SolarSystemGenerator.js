@@ -27,7 +27,7 @@ class SolarSystemGenerator {
 
   createPlanet(planetIndex) {
     let planetTypes = ["Barren", "Ice", "Lava", "Oceanic", "Plasma", "Temperate", "Gas"]
-    let typeIndex = this.randomValues.random(0, planetTypes.length, 0);
+    let typeIndex = this.randomValues.random(0, planetTypes.length - 1, 0);
     let type = planetTypes[typeIndex]
     return {
       name: "Planet " + Utils.romanize(planetIndex) + " (" + type + ")",

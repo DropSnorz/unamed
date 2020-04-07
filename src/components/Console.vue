@@ -35,6 +35,8 @@ export default {
         // yargs arguments
         scan: async () =>
           (await import(`./../commands/ScanCommand.vue`)).default,
+        jump: async () =>
+          (await import(`./../commands/JumpCommand.vue`)).default,
         init: async () =>
           (await import(`./../commands/InitCommand.vue`)).default,
         help: () => `scan: Scan surrounding area<br><br>`

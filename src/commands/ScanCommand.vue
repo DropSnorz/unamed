@@ -37,7 +37,9 @@ export default {
 
       let systems = [];
       for (let system of currentSystem.constellation.systems) {
-        systems.push(system);
+        if (system.name != currentSystem.name) {
+          systems.push(system);
+        }
       }
       this.systems = systems;
 

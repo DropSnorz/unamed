@@ -7,8 +7,8 @@
 <script>
 import CommandMixin from "./CommandMixin";
 export default {
-  mixins: [CommandMixin],
   name: "JumpCommand",
+  mixins: [CommandMixin],
   data: function() {
     return {};
   },

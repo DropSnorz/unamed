@@ -21,8 +21,8 @@
 <script>
 import CommandMixin from "./CommandMixin";
 export default {
-  mixins: [CommandMixin],
   name: "ScanCommand",
+  mixins: [CommandMixin],
   data: function() {
     return {
       planets: [],

@@ -1,6 +1,7 @@
 <template>
   <div style="height:100%;">
     <vue-command
+      intro="Everything seems so empty..."
       :commands="commands"
       show-intro
       show-help

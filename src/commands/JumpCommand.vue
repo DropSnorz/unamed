@@ -1,11 +1,13 @@
 <template>
   <div>
-    <p>Jumping to {{ jumpTarget }}</p>
+    <p>{{ commandProgressText }}</p>
   </div>
 </template>
 
 <script>
+import CommandMixin from "./CommandMixin";
 export default {
+  mixins: [CommandMixin],
   name: "JumpCommand",
   data: function() {
     return {};
@@ -13,15 +15,26 @@ export default {
   computed: {
     jumpTarget: function() {
       return this.$_arguments._[1];
+    },
+    commandProgressText: function() {
+      if (this.commandTick < 300) return "Checking propulsion systems...";
+      if (this.commandTick < 500) return "Propulsion systems... OK";
+      if (this.commandTick < 1500)
+        return "Aligning to " + this.jumpTarget + "...";
+      if (this.commandTick < 1700)
+        return "Successfully aligned with " + this.jumpTarget;
+      if (this.commandTick < 4000)
+        return "Jumping to " + this.jumpTarget + "...";
+      return "Jump complete ! Welcome to " + this.jumpTarget;
     }
   },
   mounted() {
     this.$nextTick(function() {
+      this.startCommand(4000);
       let currentSystem = this.$store.state.player.currentSystem;
       for (let system of currentSystem.constellation.systems) {
         if (system.name == this.jumpTarget) {
           this.$store.dispatch("player/setCurrentSystem", system);
-          this.leave();
           return;
         }
       }
@@ -31,16 +44,21 @@ export default {
             "player/setCurrentSystem",
             constellation.systems[0]
           );
-          this.leave();
           return;
         }
       }
-      this.leave();
     });
   },
   methods: {
     leave() {
       this.$_done();
+    }
+  },
+  watch: {
+    commandCompleted: function() {
+      if (this.commandCompleted) {
+        this.leave();
+      }
     }
   }
 };

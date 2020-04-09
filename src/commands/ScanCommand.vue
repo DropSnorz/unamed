@@ -1,20 +1,27 @@
 <template>
   <div>
-    <p>Scan results for {{ systemName }}</p>
-    <ul>
-      <li v-for="planet in planets" :key="planet.name">{{ planet.name }}</li>
-    </ul>
-    <ul>
-      <li v-for="system in systems" :key="system.name">{{ system.name }}</li>
-    </ul>
-    <ul>
-      <li v-for="constellation in constellations" :key="constellation.name">{{ constellation.name }}</li>
-    </ul>
+    <p>{{ commandProgressText }}</p>
+    <div v-if="commandCompleted">
+      <ul>
+        <li v-for="planet in planets" :key="planet.name">{{ planet.name }}</li>
+      </ul>
+      <ul>
+        <li v-for="system in systems" :key="system.name">{{ system.name }}</li>
+      </ul>
+      <ul>
+        <li
+          v-for="constellation in constellations"
+          :key="constellation.name"
+        >{{ constellation.name }}</li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
+import CommandMixin from "./CommandMixin";
 export default {
+  mixins: [CommandMixin],
   name: "ScanCommand",
   data: function() {
     return {
@@ -24,8 +31,17 @@ export default {
       systemName: ""
     };
   },
+  computed: {
+    commandProgressText: function() {
+      if (this.commandTick < 200) return "Initializing scanner";
+      if (this.commandTick < 300) return "Scanner ready";
+      if (this.commandTick < 900) return "Scanning area...";
+      return "Scan results for " + this.systemName;
+    }
+  },
   mounted() {
     this.$nextTick(function() {
+      this.startCommand(900);
       let currentSystem = this.$store.state.player.currentSystem;
       this.systemName = currentSystem.name;
 
@@ -48,13 +64,18 @@ export default {
         constellations.push(constellation);
       }
       this.constellations = constellations;
-
-      this.leave();
     });
   },
   methods: {
     leave() {
       this.$_done();
+    }
+  },
+  watch: {
+    commandCompleted: function() {
+      if (this.commandCompleted) {
+        this.leave();
+      }
     }
   }
 };

@@ -7,6 +7,7 @@
       show-help
       :title="prompt"
       :prompt="prompt"
+      :help-text="help"
     />
   </div>
 </template>
@@ -27,8 +28,9 @@ export default {
           // yargs arguments
           init: async () =>
             (await import(`./../commands/InitCommand.vue`)).default,
-          help: () => `Usage: init [option]<br><br>
-          Example: init --seed myCustomSeed
+          help: () => `Usage: init [--seed customSeed] [--size customSize]<br><br>
+          <p> <strong>--seed</strong> Creates a unique and predictable cluster using a seed</p>
+          <p> <strong>--size</strong> Force cluster size (number of constellations)</p>
           `
         };
       }
@@ -48,6 +50,12 @@ export default {
         return "u@" + this.$store.state.player.currentSystem + ":#";
       }
       return "root@world";
+    },
+    help() {
+      if (!this.$store.state.world.initiated) {
+        return 'Type \'init\' to start playing or \'help\' for details'
+      }
+      return 'Type help'
     }
   }
 };

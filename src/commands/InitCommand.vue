@@ -15,6 +15,9 @@ import sizeof from "object-sizeof";
 import ClusterGenerator from "./../game/ClusterGenerator";
 import CommandMixin from "./CommandMixin";
 import clusterWalker from "./../game/ClusterWalker";
+import r from "./../game/RuleSet"
+import clusterRuleSet from './../game/RuleSet';
+
 export default {
   name: "InitCommand",
   mixins: [CommandMixin],
@@ -22,6 +25,7 @@ export default {
     return {
       clusterGenerationTime: null,
       clusterSize: 0,
+      constellationCount: 0,
       systemCount: 0
     };
   },
@@ -35,7 +39,7 @@ export default {
         `<span>An intense light springs from the void.</span> 
         <span class="text-secondary">(` +
         this.systemCount +
-        ` stars generated)</span>`
+        ` stars generated over ` + this.constellationCount + ` constellations)</span>`
       );
     },
     commandStatusText: function() {
@@ -58,8 +62,14 @@ export default {
   },
   mounted() {
     this.$nextTick(function() {
+      let r = clusterRuleSet();
+      if(this.$_arguments["size"]) {
+        r.cluster.size.min = this.$_arguments["size"]
+        r.cluster.size.max = this.$_arguments["size"]
+      }
+
       let generationStartTime = new Date().getTime();
-      let clusterGenerator = new ClusterGenerator(this.$_arguments["seed"]);
+      let clusterGenerator = new ClusterGenerator(this.$_arguments["seed"], r);
       let cluster = clusterGenerator.generate();
 
       this.clusterGenerationTime = (
@@ -67,6 +77,7 @@ export default {
         1000
       ).toFixed(2);
 
+      this.constellationCount = cluster.constellations.length;
       this.systemCount = cluster.constellations.reduce(
         (x, constellation) => x + constellation.systems.length,
         0

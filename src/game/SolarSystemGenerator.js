@@ -1,8 +1,9 @@
 import RandomGenerator from './RandomGenerator';
-import Utils from './Utils'
+import Utils from './Utils';
 
 class SolarSystemGenerator {
-  constructor(seed, constellation) {
+  constructor(seed, ruleset, constellation) {
+    this.r = ruleset;
     this.randomValues = new RandomGenerator(seed);
     this.constellation = constellation;
   }
@@ -14,7 +15,7 @@ class SolarSystemGenerator {
       planets: []
     }
 
-    let nPlanets = this.randomValues.randomGaussian(2, 10, 0);
+    let nPlanets = this.randomValues.randomGaussian(this.r.solarSystem.planets.min, this.r.solarSystem.planets.max, 0);
     for (let i = 0; i < nPlanets; i++) {
       solarSystem.planets.push(this.createPlanet(i + 1))
     }

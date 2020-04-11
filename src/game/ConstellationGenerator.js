@@ -2,7 +2,8 @@ import RandomGenerator from './RandomGenerator';
 import SolarSystemGenerator from './SolarSystemGenerator';
 
 class ConstellationGenerator {
-  constructor(seed) {
+  constructor(seed, ruleset) {
+    this.r = ruleset;
     this.randomValues = new RandomGenerator(seed);
   }
 
@@ -11,12 +12,12 @@ class ConstellationGenerator {
     constellation["name"] = this.createName();
     constellation["paths"] = []
 
-    let nSystems = this.randomValues.randomGaussian(2, 10, 0);
+    let nSystems = this.randomValues.randomGaussian(this.r.constellation.size.min, this.r.constellation.size.max, 0);
     let systems = [];
     constellation["systems"] = systems
 
     for (let i = 0; i < nSystems; i++) {
-      systems.push(new SolarSystemGenerator(this.randomValues.random(), constellation).generate())
+      systems.push(new SolarSystemGenerator(this.randomValues.random(), this.r, constellation).generate())
     }
     return constellation;
   }

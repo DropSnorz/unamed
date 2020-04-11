@@ -20,6 +20,8 @@
 
 <script>
 import CommandMixin from "./CommandMixin";
+import clusterWalker from "./../game/ClusterWalker";
+
 export default {
   name: "ScanCommand",
   mixins: [CommandMixin],
@@ -42,7 +44,7 @@ export default {
   mounted() {
     this.$nextTick(function() {
       this.startCommand(900);
-      let currentSystem = this.$store.state.player.currentSystem;
+      let currentSystem = clusterWalker.getCurrentSystem();
       this.systemName = currentSystem.name;
 
       let planets = [];

@@ -14,9 +14,10 @@
 import sizeof from "object-sizeof";
 import ClusterGenerator from "./../game/ClusterGenerator";
 import CommandMixin from "./CommandMixin";
+import clusterWalker from "./../game/ClusterWalker";
 export default {
-  mixins: [CommandMixin],
   name: "InitCommand",
+  mixins: [CommandMixin],
   data: function() {
     return {
       clusterGenerationTime: null,
@@ -75,12 +76,14 @@ export default {
 
       console.log(cluster);
 
-      //TODO: Cluster references must be moved outside of vue store
       this.$store.dispatch(
         "player/setCurrentSystem",
-        cluster.constellations[0].systems[0]
+        cluster.constellations[0].systems[0].name
       );
       this.$store.dispatch("world/initiate", true);
+
+      clusterWalker.setCluster(cluster);
+      clusterWalker.walk(cluster.constellations[0].systems[0]);
 
       this.startCommand(8000);
     });

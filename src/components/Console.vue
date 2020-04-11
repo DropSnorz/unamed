@@ -45,7 +45,7 @@ export default {
     },
     prompt() {
       if (this.$store.state.player.currentSystem) {
-        return "u@" + this.$store.state.player.currentSystem.name + ":#";
+        return "u@" + this.$store.state.player.currentSystem + ":#";
       }
       return "root@world";
     }

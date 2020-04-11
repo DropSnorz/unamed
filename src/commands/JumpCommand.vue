@@ -6,17 +6,21 @@
 
 <script>
 import CommandMixin from "./CommandMixin";
+import clusterWalker from './../game/ClusterWalker';
 export default {
   name: "JumpCommand",
   mixins: [CommandMixin],
   data: function() {
-    return {};
+    return {
+      error: false
+    };
   },
   computed: {
     jumpTarget: function() {
       return this.$_arguments._[1];
     },
     commandProgressText: function() {
+      if(this.error) return this.error
       if (this.commandTick < 300) return "Checking propulsion systems...";
       if (this.commandTick < 500) return "Propulsion systems... OK";
       if (this.commandTick < 1500)
@@ -30,11 +34,13 @@ export default {
   },
   mounted() {
     this.$nextTick(function() {
-      this.startCommand(4000);
-      let currentSystem = this.$store.state.player.currentSystem;
+      let currentSystem = clusterWalker.getCurrentSystem();
       for (let system of currentSystem.constellation.systems) {
         if (system.name == this.jumpTarget) {
-          this.$store.dispatch("player/setCurrentSystem", system);
+          this.$store.dispatch("player/setCurrentSystem", system.name);
+          clusterWalker.walk(system);
+          this.startCommand(4000);
+
           return;
         }
       }
@@ -42,11 +48,15 @@ export default {
         if (constellation.name == this.jumpTarget) {
           this.$store.dispatch(
             "player/setCurrentSystem",
-            constellation.systems[0]
+            constellation.systems[0].name
           );
+          clusterWalker.walk(constellation.systems[0]);
+          this.startCommand(4000);
           return;
         }
       }
+      this.error = "Unknown jump target " + this.jumpTarget
+      this.leave();
     });
   },
   methods: {

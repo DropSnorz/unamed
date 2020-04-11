@@ -11,6 +11,8 @@ module.exports = {
   },
   rules: {
     // override/add rules settings here, such as:
-    'no-dupe-class-members': 'off'
+    'no-dupe-class-members': 'off',
+    'vue/no-v-html': 'off',
+    'vue/component-tags-order' : 'off'
   }
 }

@@ -11,15 +11,15 @@
 </template>
 
 <script>
-import sizeof from "object-sizeof";
-import ClusterGenerator from "./../game/ClusterGenerator";
-import CommandMixin from "./CommandMixin";
-import clusterWalker from "./../game/ClusterWalker";
-import r from "./../game/RuleSet"
+import sizeof from 'object-sizeof';
+import ClusterGenerator from './../game/ClusterGenerator';
+import CommandMixin from './CommandMixin';
+import clusterWalker from './../game/ClusterWalker';
+import r from './../game/RuleSet'
 import clusterRuleSet from './../game/RuleSet';
 
 export default {
-  name: "InitCommand",
+  name: 'InitCommand',
   mixins: [CommandMixin],
   data: function() {
     return {
@@ -31,10 +31,10 @@ export default {
   },
   computed: {
     seed: function() {
-      return this.$_arguments["seed"] ? this.$_arguments["seed"] : "?";
+      return this.$_arguments['seed'] ? this.$_arguments['seed'] : '?';
     },
     commandProgressText: function() {
-      if (this.commandTick < 3000) return "";
+      if (this.commandTick < 3000) return '';
       return (
         `<span>An intense light springs from the void.</span> 
         <span class="text-secondary">(` +
@@ -43,7 +43,7 @@ export default {
       );
     },
     commandStatusText: function() {
-      if (this.commandTick < 6000) return "";
+      if (this.commandTick < 6000) return '';
       return (
         `<span>Time is completely distorted.</span> 
         <span class="text-secondary">(` +
@@ -54,7 +54,7 @@ export default {
       );
     },
     commandEndText: function() {
-      if (this.commandTick < 8000) return "";
+      if (this.commandTick < 8000) return '';
       return `<span> In an instant, everything seems to stabilize. Everything is calm again. <br />
         This is where you wake up. You are confused, with memories of past lives.
         This terminal stands in front of you.</span>`;
@@ -63,13 +63,13 @@ export default {
   mounted() {
     this.$nextTick(function() {
       let r = clusterRuleSet();
-      if(this.$_arguments["size"]) {
-        r.cluster.size.min = this.$_arguments["size"]
-        r.cluster.size.max = this.$_arguments["size"]
+      if(this.$_arguments['size']) {
+        r.cluster.size.min = this.$_arguments['size']
+        r.cluster.size.max = this.$_arguments['size']
       }
 
       let generationStartTime = new Date().getTime();
-      let clusterGenerator = new ClusterGenerator(this.$_arguments["seed"], r);
+      let clusterGenerator = new ClusterGenerator(this.$_arguments['seed'], r);
       let cluster = clusterGenerator.generate();
 
       this.clusterGenerationTime = (
@@ -88,11 +88,10 @@ export default {
       console.log(cluster);
 
       this.$store.dispatch(
-        "player/setCurrentSystem",
+        'player/setCurrentSystem',
         cluster.constellations[0].systems[0].name
       );
-      this.$store.dispatch("world/initiate", true);
-
+      this.$store.dispatch('world/initiate', true);
       clusterWalker.setCluster(cluster);
       clusterWalker.walk(cluster.constellations[0].systems[0]);
 
@@ -120,17 +119,17 @@ export default {
 function humanFileSize(bytes, si) {
   var thresh = si ? 1000 : 1024;
   if (Math.abs(bytes) < thresh) {
-    return bytes + " B";
+    return bytes + ' B';
   }
   var units = si
-    ? ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
-    : ["KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
+    ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+    : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
   var u = -1;
   do {
     bytes /= thresh;
     ++u;
   } while (Math.abs(bytes) >= thresh && u < units.length - 1);
-  return bytes.toFixed(1) + " " + units[u];
+  return bytes.toFixed(1) + ' ' + units[u];
 }
 </script>
 

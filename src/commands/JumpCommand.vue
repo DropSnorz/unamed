@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import CommandMixin from "./CommandMixin";
+import CommandMixin from './CommandMixin';
 import clusterWalker from './../game/ClusterWalker';
 export default {
-  name: "JumpCommand",
+  name: 'JumpCommand',
   mixins: [CommandMixin],
   data: function() {
     return {
@@ -21,15 +21,15 @@ export default {
     },
     commandProgressText: function() {
       if(this.error) return this.error
-      if (this.commandTick < 300) return "Checking propulsion systems...";
-      if (this.commandTick < 500) return "Propulsion systems... OK";
+      if (this.commandTick < 300) return 'Checking propulsion systems...';
+      if (this.commandTick < 500) return 'Propulsion systems... OK';
       if (this.commandTick < 1500)
-        return "Aligning to " + this.jumpTarget + "...";
+        return 'Aligning to ' + this.jumpTarget + '...';
       if (this.commandTick < 1700)
-        return "Successfully aligned with " + this.jumpTarget;
+        return 'Successfully aligned with ' + this.jumpTarget;
       if (this.commandTick < 4000)
-        return "Jumping to " + this.jumpTarget + "...";
-      return "Jump complete ! Welcome to " + this.jumpTarget;
+        return 'Jumping to ' + this.jumpTarget + '...';
+      return 'Jump complete ! Welcome to ' + this.jumpTarget;
     }
   },
   mounted() {
@@ -37,7 +37,7 @@ export default {
       let currentSystem = clusterWalker.getCurrentSystem();
       for (let system of currentSystem.constellation.systems) {
         if (system.name == this.jumpTarget) {
-          this.$store.dispatch("player/setCurrentSystem", system.name);
+          this.$store.dispatch('player/setCurrentSystem', system.name);
           clusterWalker.walk(system);
           this.startCommand(4000);
 
@@ -47,7 +47,7 @@ export default {
       for (let constellation of currentSystem.constellation.paths) {
         if (constellation.name == this.jumpTarget) {
           this.$store.dispatch(
-            "player/setCurrentSystem",
+            'player/setCurrentSystem',
             constellation.systems[0].name
           );
           clusterWalker.walk(constellation.systems[0]);
@@ -55,7 +55,7 @@ export default {
           return;
         }
       }
-      this.error = "Unknown jump target " + this.jumpTarget
+      this.error = 'Unknown jump target ' + this.jumpTarget
       this.leave();
     });
   },

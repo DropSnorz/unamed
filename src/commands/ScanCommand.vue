@@ -19,26 +19,26 @@
 </template>
 
 <script>
-import CommandMixin from "./CommandMixin";
-import clusterWalker from "./../game/ClusterWalker";
+import CommandMixin from './CommandMixin';
+import clusterWalker from './../game/ClusterWalker';
 
 export default {
-  name: "ScanCommand",
+  name: 'ScanCommand',
   mixins: [CommandMixin],
   data: function() {
     return {
       planets: [],
       systems: [],
       constellations: [],
-      systemName: ""
+      systemName: ''
     };
   },
   computed: {
     commandProgressText: function() {
-      if (this.commandTick < 200) return "Initializing scanner";
-      if (this.commandTick < 300) return "Scanner ready";
-      if (this.commandTick < 900) return "Scanning area...";
-      return "Scan results for " + this.systemName;
+      if (this.commandTick < 200) return 'Initializing scanner';
+      if (this.commandTick < 300) return 'Scanner ready';
+      if (this.commandTick < 900) return 'Scanning area...';
+      return 'Scan results for ' + this.systemName;
     }
   },
   mounted() {

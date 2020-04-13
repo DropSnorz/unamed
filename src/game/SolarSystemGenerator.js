@@ -23,15 +23,15 @@ class SolarSystemGenerator {
   }
 
   createName() {
-    return this.constellation.name + "-" + this.randomValues.random().toString(36).slice(-this.randomValues.random(3, 4, 0))
+    return this.constellation.name + '-' + this.randomValues.random().toString(36).slice(-this.randomValues.random(3, 4, 0))
   }
 
   createPlanet(planetIndex) {
-    let planetTypes = ["Barren", "Ice", "Lava", "Oceanic", "Plasma", "Temperate", "Gas"]
+    let planetTypes = ['Barren', 'Ice', 'Lava', 'Oceanic', 'Plasma', 'Temperate', 'Gas']
     let typeIndex = this.randomValues.random(0, planetTypes.length - 1, 0);
     let type = planetTypes[typeIndex]
     return {
-      name: "Planet " + Utils.romanize(planetIndex) + " (" + type + ")",
+      name: 'Planet ' + Utils.romanize(planetIndex) + ' (' + type + ')',
       type: type
     }
   }

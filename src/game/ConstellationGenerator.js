@@ -9,12 +9,12 @@ class ConstellationGenerator {
 
   generate() {
     let constellation = {};
-    constellation["name"] = this.createName();
-    constellation["paths"] = []
+    constellation['name'] = this.createName();
+    constellation['paths'] = []
 
     let nSystems = this.randomValues.randomGaussian(this.r.constellation.size.min, this.r.constellation.size.max, 0);
     let systems = [];
-    constellation["systems"] = systems
+    constellation['systems'] = systems
 
     for (let i = 0; i < nSystems; i++) {
       systems.push(new SolarSystemGenerator(this.randomValues.random(), this.r, constellation).generate())

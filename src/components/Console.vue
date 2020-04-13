@@ -13,11 +13,11 @@
 </template>
 
 <script>
-import VueCommand from "vue-command";
-import "vue-command/dist/vue-command.css";
+import VueCommand from 'vue-command';
+import 'vue-command/dist/vue-command.css';
 
 export default {
-  name: "Console",
+  name: 'Console',
   components: {
     VueCommand
   },
@@ -27,7 +27,7 @@ export default {
         return {
           // yargs arguments
           init: async () =>
-            (await import(`./../commands/InitCommand.vue`)).default,
+            (await import('./../commands/InitCommand.vue')).default,
           help: () => `Usage: init [--seed customSeed] [--size customSize]<br><br>
           <p> <strong>--seed</strong> Creates a unique and predictable cluster using a seed</p>
           <p> <strong>--size</strong> Force cluster size (number of constellations)</p>
@@ -37,19 +37,19 @@ export default {
       return {
         // yargs arguments
         scan: async () =>
-          (await import(`./../commands/ScanCommand.vue`)).default,
+          (await import('./../commands/ScanCommand.vue')).default,
         jump: async () =>
-          (await import(`./../commands/JumpCommand.vue`)).default,
+          (await import('./../commands/JumpCommand.vue')).default,
         init: async () =>
-          (await import(`./../commands/InitCommand.vue`)).default,
-        help: () => `scan: Scan surrounding area<br><br>`
+          (await import('./../commands/InitCommand.vue')).default,
+        help: () => 'scan: Scan surrounding area<br><br>'
       };
     },
     prompt() {
       if (this.$store.state.player.currentSystem) {
-        return "u@" + this.$store.state.player.currentSystem + ":#";
+        return 'u@' + this.$store.state.player.currentSystem + ':#';
       }
-      return "root@world";
+      return 'root@world';
     },
     help() {
       if (!this.$store.state.world.initiated) {

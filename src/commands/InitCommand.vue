@@ -2,11 +2,30 @@
   <div>
     <div>
       <span>Something is about to happen...</span>
-      <span class="text-secondary">(Procedurally generating the universe using seed {{seed}})</span>
+      <span class="text-secondary">(Procedurally generating the universe using seed {{ seed }})</span>
     </div>
-    <div v-html="commandProgressText"></div>
-    <div v-html="commandStatusText"></div>
-    <div v-html="commandEndText"></div>
+    <div v-if="commandTick > 3000">
+      <span>An intense light springs from the void.</span>
+      <span
+        class="text-secondary"
+      >({{ systemCount }} stars generated over {{ constellationCount }} constellations)</span>
+    </div>
+    <div v-if="commandTick > 6000">
+      <span>Time is completely distorted.</span>
+      <span class="text-secondary">
+        (
+        {{ clusterSize }}
+        cluster genrated in
+        {{ clusterGenerationTime }} s )
+      </span>
+    </div>
+    <div v-if="commandTick >= 8000">
+      <span>
+        In an instant, everything seems to stabilize. Everything is calm again.
+        <br />This is where you wake up. You are confused, with memories of past lives.
+        This terminal stands in front of you.
+      </span>
+    </div>
   </div>
 </template>
 
@@ -15,7 +34,7 @@ import sizeof from 'object-sizeof';
 import ClusterGenerator from './../game/ClusterGenerator';
 import CommandMixin from './CommandMixin';
 import clusterWalker from './../game/ClusterWalker';
-import r from './../game/RuleSet'
+import r from './../game/RuleSet';
 import clusterRuleSet from './../game/RuleSet';
 
 export default {
@@ -32,40 +51,14 @@ export default {
   computed: {
     seed: function() {
       return this.$_arguments['seed'] ? this.$_arguments['seed'] : '?';
-    },
-    commandProgressText: function() {
-      if (this.commandTick < 3000) return '';
-      return (
-        `<span>An intense light springs from the void.</span> 
-        <span class="text-secondary">(` +
-        this.systemCount +
-        ` stars generated over ` + this.constellationCount + ` constellations)</span>`
-      );
-    },
-    commandStatusText: function() {
-      if (this.commandTick < 6000) return '';
-      return (
-        `<span>Time is completely distorted.</span> 
-        <span class="text-secondary">(` +
-        humanFileSize(this.clusterSize) +
-        ` cluster genrated in ` +
-        this.clusterGenerationTime +
-        `s )</span>`
-      );
-    },
-    commandEndText: function() {
-      if (this.commandTick < 8000) return '';
-      return `<span> In an instant, everything seems to stabilize. Everything is calm again. <br />
-        This is where you wake up. You are confused, with memories of past lives.
-        This terminal stands in front of you.</span>`;
     }
   },
   mounted() {
     this.$nextTick(function() {
       let r = clusterRuleSet();
-      if(this.$_arguments['size']) {
-        r.cluster.size.min = this.$_arguments['size']
-        r.cluster.size.max = this.$_arguments['size']
+      if (this.$_arguments['size']) {
+        r.cluster.size.min = this.$_arguments['size'];
+        r.cluster.size.max = this.$_arguments['size'];
       }
 
       let generationStartTime = new Date().getTime();
@@ -83,7 +76,7 @@ export default {
         0
       );
 
-      this.clusterSize = sizeof(cluster);
+      this.clusterSize = humanFileSize(sizeof(cluster));
 
       console.log(cluster);
 

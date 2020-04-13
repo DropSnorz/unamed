@@ -1,6 +1,16 @@
 <template>
   <div>
-    <p>{{ commandProgressText }}</p>
+    <div v-if="error">
+      <p>{{ error }}</p>
+    </div>
+    <div v-else>
+      <p v-if="commandTick < 300">Checking propulsion systems...</p>
+      <p v-else-if="commandTick < 500">hecking propulsion systems...OK</p>
+      <p v-else-if="commandTick < 1500">Aligning to {{ jumpTarget }}...</p>
+      <p v-else-if="commandTick < 1700">Successfully aligned with {{ jumpTarget }}</p>
+      <p v-else-if="commandTick < 4000">Jumping to {{ jumpTarget }}...</p>
+      <p v-else>Jump complete ! Welcome to {{ jumpTarget }}</p>
+    </div>
   </div>
 </template>
 
@@ -18,18 +28,6 @@ export default {
   computed: {
     jumpTarget: function() {
       return this.$_arguments._[1];
-    },
-    commandProgressText: function() {
-      if(this.error) return this.error
-      if (this.commandTick < 300) return 'Checking propulsion systems...';
-      if (this.commandTick < 500) return 'Propulsion systems... OK';
-      if (this.commandTick < 1500)
-        return 'Aligning to ' + this.jumpTarget + '...';
-      if (this.commandTick < 1700)
-        return 'Successfully aligned with ' + this.jumpTarget;
-      if (this.commandTick < 4000)
-        return 'Jumping to ' + this.jumpTarget + '...';
-      return 'Jump complete ! Welcome to ' + this.jumpTarget;
     }
   },
   mounted() {
@@ -55,7 +53,7 @@ export default {
           return;
         }
       }
-      this.error = 'Unknown jump target ' + this.jumpTarget
+      this.error = 'Unknown jump target ' + this.jumpTarget;
       this.leave();
     });
   },

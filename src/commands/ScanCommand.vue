@@ -1,7 +1,12 @@
 <template>
   <div>
-    <p>{{ commandProgressText }}</p>
-    <div v-if="commandCompleted">
+    <div v-if="!commandCompleted">
+      <p v-if="commandTick < 200">Initializing scanner...</p>
+      <p v-else-if="commandTick < 300">Scanner ready</p>
+      <p v-else-if="commandTick < 900">Scanning area...</p>
+    </div>
+    <div v-else>
+      <p>Scan results for {{ systemName }}</p>
       <ul>
         <li v-for="planet in planets" :key="planet.name">{{ planet.name }}</li>
       </ul>
@@ -32,14 +37,6 @@ export default {
       constellations: [],
       systemName: ''
     };
-  },
-  computed: {
-    commandProgressText: function() {
-      if (this.commandTick < 200) return 'Initializing scanner';
-      if (this.commandTick < 300) return 'Scanner ready';
-      if (this.commandTick < 900) return 'Scanning area...';
-      return 'Scan results for ' + this.systemName;
-    }
   },
   mounted() {
     this.$nextTick(function() {

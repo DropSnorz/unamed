@@ -34,7 +34,6 @@ import sizeof from 'object-sizeof';
 import ClusterGenerator from './../game/ClusterGenerator';
 import CommandMixin from './CommandMixin';
 import clusterWalker from './../game/ClusterWalker';
-import r from './../game/RuleSet';
 import clusterRuleSet from './../game/RuleSet';
 
 export default {

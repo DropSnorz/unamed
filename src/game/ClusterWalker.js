@@ -1,3 +1,5 @@
+import playerJournal from './PlayerJournal'
+
 class ClusterWalker {
 
   setCluster(cluster) {
@@ -6,6 +8,8 @@ class ClusterWalker {
 
   walk(system) {
     this.currentSystem = system;
+    playerJournal.visit(system.constellation.name)
+    playerJournal.visit(system.name)
   }
 
   getCurrentSystem() {

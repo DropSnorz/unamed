@@ -6,18 +6,26 @@
       <p v-else-if="commandTick < 900">Scanning area...</p>
     </div>
     <div v-else>
-      <p>Scan results for {{ systemName }}</p>
+      <p>Scan results for {{ systemName }}:</p>
+      <span>Nearby orbital bodies</span>
       <ul>
-        <li v-for="planet in planets" :key="planet.name">{{ planet.name }}</li>
+        <li v-for="planet in planets" :key="planet.name">{{ planet.name }}
+        </li>
       </ul>
+      <span>Reachable Stars</span>
       <ul>
-        <li v-for="system in systems" :key="system.name">{{ system.name }}</li>
+        <li v-for="system in systems" :key="system.name">{{ system.name }}
+          <span v-if="playerJournal.isVisited(system.name)" class="text-secondary"> [visited] </span>
+        </li>
       </ul>
+      <span>Constellation Signatures</span>
       <ul>
         <li
           v-for="constellation in constellations"
           :key="constellation.name"
-        >{{ constellation.name }}</li>
+        >{{ constellation.name }}
+          <span v-if="playerJournal.isVisited(constellation.name)" class="text-secondary"> [visited] </span>
+        </li>
       </ul>
     </div>
   </div>
@@ -26,6 +34,7 @@
 <script>
 import CommandMixin from './CommandMixin';
 import clusterWalker from './../game/ClusterWalker';
+import playerJournal from './../game/PlayerJournal';
 
 export default {
   name: 'ScanCommand',
@@ -35,7 +44,8 @@ export default {
       planets: [],
       systems: [],
       constellations: [],
-      systemName: ''
+      systemName: '',
+      playerJournal: playerJournal
     };
   },
   mounted() {

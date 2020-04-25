@@ -39,6 +39,7 @@ import clusterRuleSet from './../game/RuleSet';
 export default {
   name: 'InitCommand',
   mixins: [CommandMixin],
+  inject: ['terminate'],
   data: function() {
     return {
       clusterGenerationTime: null,
@@ -49,19 +50,19 @@ export default {
   },
   computed: {
     seed: function() {
-      return this.$_arguments['seed'] ? this.$_arguments['seed'] : '?';
+      return this.context.parsed.seed ? this.context.parsed.seed : '?';
     }
   },
   mounted() {
     this.$nextTick(function() {
       let r = clusterRuleSet();
-      if (this.$_arguments['size']) {
-        r.cluster.size.min = this.$_arguments['size'];
-        r.cluster.size.max = this.$_arguments['size'];
+      if (this.context.parsed.size) {
+        r.cluster.size.min = this.context.parsed.size;
+        r.cluster.size.max = this.context.parsed.size;
       }
 
       let generationStartTime = new Date().getTime();
-      let clusterGenerator = new ClusterGenerator(this.$_arguments['seed'], r);
+      let clusterGenerator = new ClusterGenerator(this.context.parsed.seed, r);
       let cluster = clusterGenerator.generate();
 
       this.clusterGenerationTime = (
@@ -90,19 +91,10 @@ export default {
       this.startCommand(8000);
     });
   },
-  methods: {
-    leave() {
-      this.$_done();
-    },
-    execute(command) {
-      this.leave();
-      this.$_executeCommand(command);
-    }
-  },
   watch: {
     commandCompleted: function() {
       if (this.commandCompleted) {
-        this.leave();
+        this.terminate();
       }
     }
   }

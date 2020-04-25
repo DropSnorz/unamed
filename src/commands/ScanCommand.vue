@@ -39,6 +39,7 @@ import playerJournal from './../game/PlayerJournal';
 export default {
   name: 'ScanCommand',
   mixins: [CommandMixin],
+  inject: ['terminate'],
   data: function() {
     return {
       planets: [],
@@ -75,15 +76,10 @@ export default {
       this.constellations = constellations;
     });
   },
-  methods: {
-    leave() {
-      this.$_done();
-    }
-  },
   watch: {
     commandCompleted: function() {
       if (this.commandCompleted) {
-        this.leave();
+        this.terminate();
       }
     }
   }

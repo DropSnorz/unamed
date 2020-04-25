@@ -44,7 +44,7 @@ class ClusterGenerator {
 
 
     return {
-      name: "Main Cluster",
+      name: 'Main Cluster',
       constellations: constellations
     }
   }

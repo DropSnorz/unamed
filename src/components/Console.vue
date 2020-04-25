@@ -3,6 +3,7 @@
     <vue-command
       intro="Everything seems so empty..."
       :commands="commands"
+      :executed="new Set()"
       show-intro
       show-help
       :title="prompt"
@@ -64,6 +65,12 @@ export default {
 <style lang="scss">
 .vue-command {
   height: 100%;
+  display: flex; 
+  flex-direction: column; 
+  .term {
+    display: flex;
+    flex: 1;
+  }
   .term-std {
     overflow-y: scroll;
   }

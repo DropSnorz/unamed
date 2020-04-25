@@ -20,6 +20,7 @@ import clusterWalker from './../game/ClusterWalker';
 export default {
   name: 'JumpCommand',
   mixins: [CommandMixin],
+  inject: ['terminate'],
   data: function() {
     return {
       error: false
@@ -27,7 +28,7 @@ export default {
   },
   computed: {
     jumpTarget: function() {
-      return this.$_arguments._[1];
+      return this.context.parsed._[1];
     }
   },
   mounted() {
@@ -54,18 +55,13 @@ export default {
         }
       }
       this.error = 'Unknown jump target ' + this.jumpTarget;
-      this.leave();
+      this.terminate();
     });
-  },
-  methods: {
-    leave() {
-      this.$_done();
-    }
   },
   watch: {
     commandCompleted: function() {
       if (this.commandCompleted) {
-        this.leave();
+        this.terminate();
       }
     }
   }

@@ -67,10 +67,15 @@ export default {
   height: 100%;
   display: flex; 
   flex-direction: column; 
+
+  .term-bar {
+    background: #0a0f11;
+  }
   .term {
     display: flex;
     flex: 1;
     overflow-y: scroll;
+    background: #05080a;
   }
 }
 </style>

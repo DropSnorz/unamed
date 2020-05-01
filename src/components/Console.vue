@@ -70,8 +70,6 @@ export default {
   .term {
     display: flex;
     flex: 1;
-  }
-  .term-std {
     overflow-y: scroll;
   }
 }

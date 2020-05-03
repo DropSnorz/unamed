@@ -1,30 +1,47 @@
 <template>
   <div>
-    <div>
-      <span>Something is about to happen...</span>
-      <span class="text-secondary">(Procedurally generating the universe using seed {{ seed }})</span>
+    <div v-if="isHelp()">
+      init - Create a new cluster
+      Usage: init [--seed customSeed] [--size customSize]
+      <br />
+      <br />
+      <p>
+        <strong>--seed</strong> Create a unique and predictable cluster using a seed
+      </p>
+      <p>
+        <strong>--size</strong> Force cluster size (number of constellations)
+      </p>
+      <p>
+        <strong>-h, --help</strong> Display help text
+      </p>
     </div>
-    <div v-if="commandTick > 3000">
-      <span>An intense light springs from the void.</span>
-      <span
-        class="text-secondary"
-      >({{ systemCount }} stars generated over {{ constellationCount }} constellations)</span>
-    </div>
-    <div v-if="commandTick > 6000">
-      <span>Time is completely distorted.</span>
-      <span class="text-secondary">
-        (
-        {{ clusterSize }}
-        cluster genrated in
-        {{ clusterGenerationTime }} s )
-      </span>
-    </div>
-    <div v-if="commandTick >= 8000">
-      <span>
-        In an instant, everything seems to stabilize. Everything is calm again.
-        <br />This is where you wake up. You are confused, with memories of past lives.
-        This terminal stands in front of you.
-      </span>
+    <div v-else>
+      <div>
+        <span>Something is about to happen...</span>
+        <span class="text-secondary">(Procedurally generating the universe using seed {{ seed }})</span>
+      </div>
+      <div v-if="commandTick > 3000">
+        <span>An intense light springs from the void.</span>
+        <span
+          class="text-secondary"
+        >({{ systemCount }} stars generated over {{ constellationCount }} constellations)</span>
+      </div>
+      <div v-if="commandTick > 6000">
+        <span>Time is completely distorted.</span>
+        <span class="text-secondary">
+          (
+          {{ clusterSize }}
+          cluster genrated in
+          {{ clusterGenerationTime }} s )
+        </span>
+      </div>
+      <div v-if="commandTick >= 8000">
+        <span>
+          In an instant, everything seems to stabilize. Everything is calm again.
+          <br />This is where you wake up. You are confused, with memories of past lives.
+          This terminal stands in front of you.
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -55,6 +72,11 @@ export default {
   },
   mounted() {
     this.$nextTick(function() {
+      if (this.isHelp()) {
+        this.terminate();
+        return;
+      }
+
       let r = clusterRuleSet();
       if (this.context.parsed.size) {
         r.cluster.size.min = this.context.parsed.size;

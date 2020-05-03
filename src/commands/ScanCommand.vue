@@ -1,5 +1,15 @@
 <template>
   <div>
+    <div v-if="isHelp()">
+      scan - Scan surrounding area
+      Usage: scan
+      <br />
+      <br />
+      <p>
+        <strong>-h, --help</strong> Display help text
+      </p>
+    </div>
+    <div v-else>
     <div v-if="!commandCompleted">
       <p v-if="commandTick < 200">Initializing scanner...</p>
       <p v-else-if="commandTick < 300">Scanner ready</p>
@@ -28,6 +38,7 @@
         </li>
       </ul>
     </div>
+    </div>
   </div>
 </template>
 
@@ -51,6 +62,10 @@ export default {
   },
   mounted() {
     this.$nextTick(function() {
+      if(this.isHelp()){
+        this.terminate();
+        return;
+      }
       this.startCommand(900);
       let currentSystem = clusterWalker.getCurrentSystem();
       this.systemName = currentSystem.name;

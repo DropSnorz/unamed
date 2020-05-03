@@ -4,7 +4,8 @@ export default {
       commandTick: 0,
       commandTickInterval: null,
       commandStarted: false,
-      commandCompleted: false
+      commandCompleted: false,
+      helpText: ''
     }
   },
   methods: {
@@ -19,6 +20,10 @@ export default {
           clearInterval(this.commandTickInterval);
         }
 			}, 100);
-		},
+    },
+    
+    isHelp(){
+      return this.context.parsed.h || this.context.parsed.help
+    }
   }
 }

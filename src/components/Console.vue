@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import VueCommand from 'vue-command';
+import VueCommand, { createStdout } from 'vue-command';
 import 'vue-command/dist/vue-command.css';
 
 export default {
@@ -29,10 +29,11 @@ export default {
           // yargs arguments
           init: async () =>
             (await import('./../commands/InitCommand.vue')).default,
-          help: () => `Usage: init [--seed customSeed] [--size customSize]<br><br>
-          <p> <strong>--seed</strong> Creates a unique and predictable cluster using a seed</p>
-          <p> <strong>--size</strong> Force cluster size (number of constellations)</p>
-          `
+          help: () => createStdout(`
+          init: Create a new cluster<br />
+          help: Display help text<br />
+          Use 'command --help' or 'command -h' for details<br />
+          `)
         };
       }
       return {
@@ -43,7 +44,11 @@ export default {
           (await import('./../commands/JumpCommand.vue')).default,
         init: async () =>
           (await import('./../commands/InitCommand.vue')).default,
-        help: () => 'scan: Scan surrounding area<br><br>'
+        help: () => createStdout(`
+          scan: Scan surrounding area<br />
+          jump: Jump to a nearby signature<br />
+          Use 'command --help' or 'command -h' for details<br />
+          `)
       };
     },
     prompt() {

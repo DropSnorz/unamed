@@ -1,15 +1,26 @@
 <template>
   <div>
-    <div v-if="error">
-      <p>{{ error }}</p>
+    <div v-if="isHelp()">
+      jump - Jump to a nearby signature
+      Usage: jump TARGET
+      <br />
+      <br />
+      <p>
+        <strong>-h, --help</strong> Display help text
+      </p>
     </div>
     <div v-else>
-      <p v-if="commandTick < 300">Checking propulsion systems...</p>
-      <p v-else-if="commandTick < 500">hecking propulsion systems...OK</p>
-      <p v-else-if="commandTick < 1500">Aligning to {{ jumpTarget }}...</p>
-      <p v-else-if="commandTick < 1700">Successfully aligned with {{ jumpTarget }}</p>
-      <p v-else-if="commandTick < 4000">Jumping to {{ jumpTarget }}...</p>
-      <p v-else>Jump complete ! Welcome to {{ jumpTarget }}</p>
+      <div v-if="error">
+        <p>{{ error }}</p>
+      </div>
+      <div v-else>
+        <p v-if="commandTick < 300">Checking propulsion systems...</p>
+        <p v-else-if="commandTick < 500">hecking propulsion systems...OK</p>
+        <p v-else-if="commandTick < 1500">Aligning to {{ jumpTarget }}...</p>
+        <p v-else-if="commandTick < 1700">Successfully aligned with {{ jumpTarget }}</p>
+        <p v-else-if="commandTick < 4000">Jumping to {{ jumpTarget }}...</p>
+        <p v-else>Jump complete ! Welcome to {{ jumpTarget }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -33,6 +44,10 @@ export default {
   },
   mounted() {
     this.$nextTick(function() {
+      if (this.isHelp()) {
+        this.terminate();
+        return;
+      }
       let currentSystem = clusterWalker.getCurrentSystem();
       for (let system of currentSystem.constellation.systems) {
         if (system.name == this.jumpTarget) {

@@ -9,6 +9,7 @@
       :title="prompt"
       :prompt="prompt"
       :help-text="help"
+      ref="vueCommand"
     />
   </div>
 </template>
@@ -52,16 +53,27 @@ export default {
       };
     },
     prompt() {
+      let prompt
       if (this.$store.state.player.currentSystem) {
-        return 'u@' + this.$store.state.player.currentSystem + ':#';
+        prompt = 'u@' + this.$store.state.player.currentSystem + ':#';
+        this.forcePrompt(prompt)
+        return prompt;
       }
       return 'root@world';
+
     },
     help() {
       if (!this.$store.state.world.initiated) {
         return 'Type \'init\' to start playing or \'help\' for details'
       }
       return 'Type help'
+    }
+  },
+  methods : {
+    forcePrompt: function(prompt) {
+        const stdins = this.$refs.vueCommand.$refs.stdin
+        const lastStdin = stdins[stdins.length - 1]
+        lastStdin.setPrompt(prompt)
     }
   }
 };
@@ -72,6 +84,7 @@ export default {
   height: 100%;
   display: flex; 
   flex-direction: column; 
+  background: #111;
 
   .term-bar {
     background: #0a0f11;
@@ -80,7 +93,6 @@ export default {
     display: flex;
     flex: 1;
     overflow-y: scroll;
-    background: #05080a;
   }
 }
 </style>

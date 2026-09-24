@@ -10,6 +10,9 @@
         <div class="viewport__glass" />
         <div class="viewport__dust" />
         <div class="viewport__reflection" />
+        <span v-for="corner in ['tl', 'tr', 'bl', 'br']" :key="corner" class="viewport__gusset" :class="`viewport__gusset--${corner}`" aria-hidden="true">
+          <span class="viewport__bolt" />
+        </span>
 
         <div class="viewport__hud" :class="{ 'is-on': game.online }">
           <div class="hud__corner hud__corner--tl">
@@ -33,9 +36,6 @@
     <div class="viewport__strut" aria-hidden="true">
       <span v-for="n in 4" :key="n" class="viewport__bolt" />
     </div>
-    <span v-for="corner in ['tl', 'tr', 'bl', 'br']" :key="corner" class="viewport__gusset" :class="`viewport__gusset--${corner}`" aria-hidden="true">
-      <span class="viewport__bolt" />
-    </span>
   </div>
 </template>
 
@@ -271,6 +271,13 @@ useCanvas(canvas, draw);
     left: 34px;
     right: calc(50% + 150px);
   }
+
+  // No room beside the stamp on narrow screens
+  @media (max-width: 900px) {
+    &--bottom {
+      display: none;
+    }
+  }
 }
 
 .viewport__stamp {
@@ -364,11 +371,11 @@ useCanvas(canvas, draw);
 .viewport__strut {
   position: absolute;
   z-index: 52;
-  top: 0;
-  bottom: 0;
+  top: 16px;
+  bottom: 16px;
   left: 50%;
-  width: 22px;
-  margin-left: -11px;
+  width: 10px;
+  margin-left: -5px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -379,9 +386,14 @@ useCanvas(canvas, draw);
     linear-gradient(90deg, #0c100e, #34403b 18%, #5c6b64 42%, #46534d 58%, #26302c 82%, #0c100e);
   background-size: 400px 400px, auto;
   box-shadow:
-    -4px 0 10px rgba(0, 0, 0, 0.7),
-    4px 0 10px rgba(0, 0, 0, 0.7);
-  clip-path: polygon(0 0, 100% 0, 78% 100%, 22% 100%);
+    -3px 0 6px rgba(0, 0, 0, 0.7),
+    3px 0 6px rgba(0, 0, 0, 0.7);
+  clip-path: polygon(0 0, 100% 0, 85% 100%, 15% 100%);
+
+  .viewport__bolt {
+    width: 6px;
+    height: 6px;
+  }
 }
 
 // Hex head bolt
@@ -393,43 +405,52 @@ useCanvas(canvas, draw);
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7));
 }
 
-// Triangular brackets bolted in the window corners
+// Triangular brackets bolted in the glass corners, flush with the gasket
 .viewport__gusset {
   position: absolute;
-  z-index: 52;
-  width: 30px;
-  height: 30px;
+  z-index: 2;
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
   background:
     var(--tex-grain-dark),
-    linear-gradient(135deg, #5e6e67, #33403b 60%, #1f2724);
+    linear-gradient(135deg, #56655f, #3a4843 55%, #2a3531);
   clip-path: polygon(0 0, 100% 0, 0 100%);
-  filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.8));
+  filter: drop-shadow(1px 1px 1.5px rgba(0, 0, 0, 0.9));
+
+  // Light catching the bevelled hypotenuse
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 47%, rgba(255, 255, 255, 0.22) 49%, transparent 53%);
+  }
 
   .viewport__bolt {
     position: absolute;
-    top: 6px;
-    left: 6px;
-    width: 7px;
-    height: 7px;
+    top: 5px;
+    left: 5px;
+    width: 6px;
+    height: 6px;
   }
 
   &--tl {
-    top: 24px;
-    left: 20px;
+    top: 0;
+    left: 0;
   }
   &--tr {
-    top: 24px;
-    right: 20px;
+    top: 0;
+    right: 0;
     transform: scaleX(-1);
   }
   &--bl {
-    bottom: 24px;
-    left: 20px;
+    bottom: 0;
+    left: 0;
     transform: scaleY(-1);
   }
   &--br {
-    bottom: 24px;
-    right: 20px;
+    bottom: 0;
+    right: 0;
     transform: scale(-1, -1);
   }
 }
@@ -446,7 +467,7 @@ useCanvas(canvas, draw);
   }
 
   .viewport__gusset {
-    filter: brightness(0.3) drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.8));
+    filter: brightness(0.3) drop-shadow(1px 1px 1.5px rgba(0, 0, 0, 0.9));
   }
 }
 

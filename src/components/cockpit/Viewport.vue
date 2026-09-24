@@ -1,27 +1,41 @@
 <template>
-  <div class="viewport">
-    <div class="viewport__window">
-      <canvas ref="canvas" class="viewport__canvas" />
-      <div class="viewport__glass" />
+  <div class="viewport" :class="{ 'is-lit': game.online }">
+    <div class="viewport__rivets viewport__rivets--top rivets" aria-hidden="true" />
+    <div class="viewport__rivets viewport__rivets--bottom rivets" aria-hidden="true" />
+    <span class="viewport__stamp decal" aria-hidden="true">VIEWPORT A · TRANSPARENT ALUMINIUM 42MM · DO NOT LEAN</span>
 
-      <div class="viewport__hud" :class="{ 'is-on': game.online }">
-        <div class="hud__corner hud__corner--tl">
-          <div>SYS {{ system?.name }}</div>
-          <div class="hud__dim">CONST {{ game.currentConstellation?.name }}</div>
+    <div class="viewport__bezel">
+      <div class="viewport__window">
+        <canvas ref="canvas" class="viewport__canvas" />
+        <div class="viewport__glass" />
+        <div class="viewport__dust" />
+        <div class="viewport__reflection" />
+
+        <div class="viewport__hud" :class="{ 'is-on': game.online }">
+          <div class="hud__corner hud__corner--tl">
+            <div>SYS {{ system?.name }}</div>
+            <div class="hud__dim">CONST {{ game.currentConstellation?.name }}</div>
+          </div>
+          <div class="hud__corner hud__corner--tr">
+            <div>CLASS {{ system?.star.class }}{{ system?.star.subclass }} · {{ system?.star.temperature }} K</div>
+            <div class="hud__dim">HDG {{ heading }}°</div>
+          </div>
+          <svg class="hud__reticle" viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="18" />
+            <path d="M50 22v12M50 66v12M22 50h12M66 50h12" />
+            <path d="M8 20V8h12M92 20V8H80M8 80v12h12M92 80v12H80" />
+          </svg>
+          <div v-if="banner" class="hud__banner">{{ banner }}</div>
         </div>
-        <div class="hud__corner hud__corner--tr">
-          <div>CLASS {{ system?.star.class }}{{ system?.star.subclass }} · {{ system?.star.temperature }} K</div>
-          <div class="hud__dim">HDG {{ heading }}°</div>
-        </div>
-        <svg class="hud__reticle" viewBox="0 0 100 100" aria-hidden="true">
-          <circle cx="50" cy="50" r="18" />
-          <path d="M50 22v12M50 66v12M22 50h12M66 50h12" />
-          <path d="M8 20V8h12M92 20V8H80M8 80v12h12M92 80v12H80" />
-        </svg>
-        <div v-if="banner" class="hud__banner">{{ banner }}</div>
       </div>
     </div>
-    <div class="viewport__strut" />
+
+    <div class="viewport__strut" aria-hidden="true">
+      <span v-for="n in 4" :key="n" class="viewport__bolt" />
+    </div>
+    <span v-for="corner in ['tl', 'tr', 'bl', 'br']" :key="corner" class="viewport__gusset" :class="`viewport__gusset--${corner}`" aria-hidden="true">
+      <span class="viewport__bolt" />
+    </span>
   </div>
 </template>
 
@@ -90,9 +104,9 @@ function buildNebula(w, h) {
   const ctx = off.getContext('2d');
   const hue = hash % 360;
   for (let i = 0; i < 5; i++) {
-    const x = ((hash >> (i * 3)) % 100) / 100 * w;
-    const y = ((hash >> (i * 5)) % 100) / 100 * h;
-    const r = (0.25 + ((hash >> i) % 40) / 100) * Math.max(w, h);
+    const x = ((hash >>> (i * 3)) % 100) / 100 * w;
+    const y = ((hash >>> (i * 5)) % 100) / 100 * h;
+    const r = (0.25 + ((hash >>> i) % 40) / 100) * Math.max(w, h);
     const g = ctx.createRadialGradient(x, y, 0, x, y, r);
     g.addColorStop(0, `hsla(${(hue + i * 35) % 360}, 70%, 45%, 0.16)`);
     g.addColorStop(1, 'hsla(0, 0%, 0%, 0)');
@@ -218,29 +232,66 @@ useCanvas(canvas, draw);
 </script>
 
 <style lang="scss" scoped>
+// Riveted steel frame around the canopy glass
 .viewport {
   position: relative;
   height: 100%;
-  padding: 12px;
-  border-radius: 22px 22px 12px 12px;
-  background: linear-gradient(180deg, #2d3834, #1a211e);
+  padding: 18px 14px;
+  border-radius: 24px 24px 12px 12px;
+  background:
+    var(--tex-scratches),
+    var(--tex-grain-light),
+    var(--tex-grain-dark),
+    var(--tex-grime),
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255, 255, 240, 0.1), transparent 60%),
+    linear-gradient(180deg, #3d4c46, #29332f 50%, #1b2320);
+  background-size: 400px 400px, 256px 256px, 256px 256px, 512px 512px, auto, auto;
   box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 0 1px #0a0d0c,
-    0 8px 18px rgba(0, 0, 0, 0.7);
+    inset 1px 1px 0 rgba(255, 255, 255, 0.16),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.6),
+    inset 0 0 20px rgba(0, 0, 0, 0.4),
+    0 0 0 1px #040505,
+    0 0 0 3px #111614,
+    0 12px 24px rgba(0, 0, 0, 0.7);
+}
 
-  // Bolts around the window frame
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 4px;
-    border-radius: 20px 20px 10px 10px;
-    pointer-events: none;
-    background:
-      radial-gradient(circle, #8f9894 0 1.5px, #1c211f 2px 3px, transparent 3.5px) 19px 0 / 38px 8px repeat-x,
-      radial-gradient(circle, #8f9894 0 1.5px, #1c211f 2px 3px, transparent 3.5px) 19px 100% / 38px 8px repeat-x;
-    opacity: 0.8;
+.viewport__rivets {
+  position: absolute;
+  height: 10px;
+  --rivet-gap: 36px;
+
+  &--top {
+    top: 4px;
+    left: 34px;
+    right: 34px;
   }
+
+  &--bottom {
+    bottom: 4px;
+    left: 34px;
+    right: calc(50% + 150px);
+  }
+}
+
+.viewport__stamp {
+  position: absolute;
+  bottom: 5px;
+  right: 40px;
+  font-size: 7px;
+}
+
+// Chamfered inner frame sloping toward the glass
+.viewport__bezel {
+  height: 100%;
+  padding: 6px;
+  border-radius: 16px 16px 8px 8px;
+  background: linear-gradient(180deg, #1a211e, #4d5d56 12%, #34413c 50%, #56665f 92%, #1e2522);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.6),
+    inset 2px 0 3px rgba(0, 0, 0, 0.35),
+    inset -2px 0 3px rgba(0, 0, 0, 0.35),
+    0 0 0 1px #070908;
 }
 
 .viewport__window {
@@ -249,10 +300,11 @@ useCanvas(canvas, draw);
   z-index: 51;
   height: 100%;
   overflow: hidden;
-  border-radius: 14px 14px 6px 6px;
+  border-radius: 12px 12px 5px 5px;
+  // Black rubber gasket
   box-shadow:
-    inset 0 0 0 3px #0b0e0d,
-    inset 0 0 30px rgba(0, 0, 0, 0.9);
+    0 0 0 3px #050505,
+    0 0 0 4px rgba(255, 255, 255, 0.07);
 }
 
 .viewport__canvas {
@@ -263,15 +315,49 @@ useCanvas(canvas, draw);
   height: 100%;
 }
 
-.viewport__glass {
+.viewport__glass,
+.viewport__dust,
+.viewport__reflection {
   position: absolute;
   inset: 0;
   pointer-events: none;
+}
+
+// Reflections on the thick glass and depth shadow from the gasket
+.viewport__glass {
   background:
-    linear-gradient(115deg, transparent 20%, rgba(255, 255, 255, 0.05) 28%, transparent 36%),
-    linear-gradient(115deg, transparent 60%, rgba(255, 255, 255, 0.03) 64%, transparent 68%),
+    linear-gradient(112deg, transparent 18%, rgba(255, 255, 255, 0.055) 26%, rgba(255, 255, 255, 0.02) 30%, transparent 36%),
+    linear-gradient(112deg, transparent 58%, rgba(255, 255, 255, 0.035) 62%, transparent 67%),
     radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55));
-  box-shadow: inset 0 0 0 3px #0b0e0d;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.9),
+    inset 0 6px 14px rgba(0, 0, 0, 0.7),
+    inset 0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+// Dust, micro scratches and a fingerprint smudge
+.viewport__dust {
+  background:
+    radial-gradient(ellipse 12% 9% at 71% 64%, rgba(255, 255, 255, 0.05), transparent 70%),
+    radial-gradient(ellipse 8% 12% at 23% 30%, rgba(255, 255, 255, 0.035), transparent 70%),
+    var(--tex-glass-dust);
+  background-size: auto, auto, 256px 256px;
+  opacity: 0.22;
+  mix-blend-mode: screen;
+}
+
+// Dashboard lights reflected at the bottom of the glass once powered
+.viewport__reflection {
+  background:
+    radial-gradient(ellipse 30% 22% at 18% 104%, rgba(131, 255, 166, 0.1), transparent 70%),
+    radial-gradient(ellipse 34% 20% at 62% 104%, rgba(255, 176, 0, 0.08), transparent 70%),
+    radial-gradient(ellipse 40% 12% at 50% 104%, rgba(255, 255, 255, 0.04), transparent 70%);
+  opacity: 0;
+  transition: opacity 1.5s 0.8s;
+}
+
+.viewport.is-lit .viewport__reflection {
+  opacity: 1;
 }
 
 // Canopy strut splitting the window in two panes
@@ -281,11 +367,87 @@ useCanvas(canvas, draw);
   top: 0;
   bottom: 0;
   left: 50%;
-  width: 18px;
-  margin-left: -9px;
-  background: linear-gradient(90deg, #111614, #3d4a45 35%, #56645e 50%, #2c3632 70%, #0f1312);
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
-  clip-path: polygon(0 0, 100% 0, 70% 100%, 30% 100%);
+  width: 22px;
+  margin-left: -11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  padding: 28px 0;
+  background:
+    var(--tex-scratches),
+    linear-gradient(90deg, #0c100e, #34403b 18%, #5c6b64 42%, #46534d 58%, #26302c 82%, #0c100e);
+  background-size: 400px 400px, auto;
+  box-shadow:
+    -4px 0 10px rgba(0, 0, 0, 0.7),
+    4px 0 10px rgba(0, 0, 0, 0.7);
+  clip-path: polygon(0 0, 100% 0, 78% 100%, 22% 100%);
+}
+
+// Hex head bolt
+.viewport__bolt {
+  width: 9px;
+  height: 9px;
+  clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0 50%);
+  background: conic-gradient(from -30deg, #eef2f0 0 60deg, #a3aba7 60deg 120deg, #4a514e 120deg 180deg, #2a2f2d 180deg 240deg, #666e6a 240deg 300deg, #cfd5d2 300deg 360deg);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7));
+}
+
+// Triangular brackets bolted in the window corners
+.viewport__gusset {
+  position: absolute;
+  z-index: 52;
+  width: 30px;
+  height: 30px;
+  background:
+    var(--tex-grain-dark),
+    linear-gradient(135deg, #5e6e67, #33403b 60%, #1f2724);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.8));
+
+  .viewport__bolt {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 7px;
+    height: 7px;
+  }
+
+  &--tl {
+    top: 24px;
+    left: 20px;
+  }
+  &--tr {
+    top: 24px;
+    right: 20px;
+    transform: scaleX(-1);
+  }
+  &--bl {
+    bottom: 24px;
+    left: 20px;
+    transform: scaleY(-1);
+  }
+  &--br {
+    bottom: 24px;
+    right: 20px;
+    transform: scale(-1, -1);
+  }
+}
+
+// Frame parts drawn above the window are dimmed with the cabin until power-up
+.viewport__strut,
+.viewport__gusset {
+  transition: filter 1.2s;
+}
+
+.viewport:not(.is-lit) {
+  .viewport__strut {
+    filter: brightness(0.3);
+  }
+
+  .viewport__gusset {
+    filter: brightness(0.3) drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.8));
+  }
 }
 
 .viewport__hud {

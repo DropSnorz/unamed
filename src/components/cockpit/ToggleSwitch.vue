@@ -1,22 +1,25 @@
 <template>
-  <div class="toggle">
+  <div class="toggle" :class="{ 'is-on': on, 'is-disabled': disabled }">
     <span class="plate toggle__label">{{ label }}</span>
-    <span class="toggle__state stencil">ON</span>
-    <button
-      type="button"
-      class="toggle__switch"
-      role="switch"
-      :class="{ 'is-on': on }"
-      :aria-checked="on"
-      :aria-label="label"
-      :disabled="disabled"
-      @click="flip"
-    >
-      <span class="toggle__nut" />
-      <span class="toggle__lever" />
-    </button>
-    <span class="toggle__state stencil">OFF</span>
-    <Lamp :color="lampColor" :on="on && !disabled" size="9px" />
+    <div class="toggle__plate">
+      <span class="toggle__legend stencil">ON</span>
+      <button
+        type="button"
+        class="toggle__switch"
+        role="switch"
+        :aria-checked="on"
+        :aria-label="label"
+        :disabled="disabled"
+        @click="flip"
+      >
+        <span class="toggle__nut" />
+        <span class="toggle__bushing" />
+        <span class="toggle__shadow" />
+        <span class="toggle__lever" />
+      </button>
+      <span class="toggle__legend stencil">OFF</span>
+    </div>
+    <Lamp :color="lampColor" :on="on && !disabled" size="8px" />
   </div>
 </template>
 
@@ -43,18 +46,38 @@ function flip() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 6px;
 }
 
 .toggle__label {
-  margin-bottom: 3px;
-  font-size: 10px;
-  padding: 1px 5px 0;
+  font-size: 9px;
+  padding: 1px 9px 0;
 }
 
-.toggle__state {
-  font-size: 9px;
-  color: rgba(228, 217, 188, 0.6);
+// Small steel mounting plate with engraved legends
+.toggle__plate {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  width: 40px;
+  padding: 4px 0;
+  border-radius: 4px;
+  background:
+    var(--tex-brushed),
+    linear-gradient(160deg, #6a7470, #3a423e 60%, #2a302d);
+  box-shadow:
+    0 0 0 1px #070908,
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    0 2px 4px rgba(0, 0, 0, 0.55);
+}
+
+.toggle__legend {
+  font-size: 8px;
+  color: rgba(240, 232, 210, 0.75);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6);
 }
 
 .toggle__switch {
@@ -63,16 +86,11 @@ function flip() {
   height: 34px;
   padding: 0;
   border: 0;
-  border-radius: 50%;
+  background: none;
   cursor: pointer;
-  background: radial-gradient(circle at 40% 35%, #b7bfbb, #59605c 60%, #2c302e);
-  box-shadow:
-    0 0 0 2px #121513,
-    0 2px 4px rgba(0, 0, 0, 0.7);
 
   &:disabled {
     cursor: not-allowed;
-    filter: brightness(0.6);
   }
 
   &:focus-visible {
@@ -81,32 +99,94 @@ function flip() {
   }
 }
 
-// Hexagonal nut around the lever
+// Hex nut with lit facets
 .toggle__nut {
   position: absolute;
-  inset: 8px;
-  clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0 50%);
-  background: linear-gradient(160deg, #e2e7e4, #7d8581 55%, #3f4542);
+  inset: 5px;
+  clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0 50%);
+  background:
+    conic-gradient(from -30deg, #f2f5f3 0 60deg, #aab2ae 60deg 120deg, #4d5451 120deg 180deg, #2c312f 180deg 240deg, #6c7470 240deg 300deg, #d5dbd8 300deg 360deg);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.6));
 }
 
-// Chrome bat-handle lever
+// Threaded bushing the lever pivots in
+.toggle__bushing {
+  position: absolute;
+  inset: 11px;
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle, #3d4441 0 1px, #9ba39f 1px 2px),
+    #555;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+// Chrome bat-handle lever: tapered shaft and ball tip, pivoting on the bushing
 .toggle__lever {
   position: absolute;
+  z-index: 2;
   left: 50%;
   bottom: 50%;
-  width: 9px;
-  height: 24px;
-  margin-left: -4.5px;
-  border-radius: 5px 5px 3px 3px;
-  background: linear-gradient(90deg, #6c7470, #f4f7f5 45%, #8a928e 70%, #4c5350);
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.6);
-  // Pivot on the nut: pointing down = OFF, up = ON
+  width: 10px;
+  height: 25px;
+  margin-left: -5px;
   transform-origin: 50% 100%;
-  transform: rotate(180deg) scaleY(0.85);
-  transition: transform 0.12s cubic-bezier(0.5, 1.8, 0.6, 1);
+  transform: rotate(180deg) scaleY(0.82);
+  transition: transform 0.11s cubic-bezier(0.5, 1.9, 0.6, 1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    top: 3px;
+    bottom: 0;
+    clip-path: polygon(22% 0, 78% 0, 100% 100%, 0 100%);
+    background: linear-gradient(90deg, #3f4643, #f7faf8 38%, #b9c1bd 55%, #5a625e 85%, #2f3431);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -3px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff 0 12%, #c9d0cc 35%, #5f6763 80%, #2c312e);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+  }
 }
 
-.toggle__switch.is-on .toggle__lever {
-  transform: rotate(0deg) scaleY(0.85);
+// Cast shadow of the lever on the plate
+.toggle__shadow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 20px;
+  margin-left: -1px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.45);
+  filter: blur(2px);
+  transform-origin: 50% 0;
+  transform: translate(2px, 1px) rotate(-8deg);
+  transition: transform 0.11s;
+  z-index: 1;
+}
+
+.toggle.is-on {
+  .toggle__lever {
+    transform: rotate(0deg) scaleY(0.82);
+  }
+
+  .toggle__shadow {
+    transform: translate(3px, -1px) rotate(172deg);
+  }
+}
+
+.toggle.is-disabled .toggle__switch {
+  filter: brightness(0.7);
 }
 </style>

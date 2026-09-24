@@ -8,25 +8,57 @@
           <stop offset="100%" stop-color="#4f3a1b" />
         </radialGradient>
         <radialGradient :id="`face-${uid}`" cx="50%" cy="40%">
-          <stop offset="0%" stop-color="#f4ecd6" />
-          <stop offset="100%" stop-color="#cfc3a2" />
+          <stop offset="0%" stop-color="#f6efdb" />
+          <stop offset="100%" stop-color="#d3c7a6" />
+        </radialGradient>
+        <radialGradient :id="`age-${uid}`" cx="50%" cy="50%" r="50%">
+          <stop offset="70%" stop-color="rgba(120,90,40,0)" />
+          <stop offset="100%" stop-color="rgba(110,80,30,0.35)" />
+        </radialGradient>
+        <radialGradient :id="`screw-${uid}`" cx="35%" cy="30%">
+          <stop offset="0%" stop-color="#fbe9bd" />
+          <stop offset="60%" stop-color="#a88445" />
+          <stop offset="100%" stop-color="#4f3a1b" />
+        </radialGradient>
+        <radialGradient :id="`hub-${uid}`" cx="35%" cy="30%">
+          <stop offset="0%" stop-color="#8f8a80" />
+          <stop offset="100%" stop-color="#1e1c1a" />
         </radialGradient>
       </defs>
+      <!-- Brass bezel with a turned groove and four screws -->
+      <circle cx="60" cy="60" r="59" fill="#0c0b0a" />
       <circle cx="60" cy="60" r="58" :fill="`url(#bezel-${uid})`" />
+      <circle cx="60" cy="60" r="54.5" fill="none" stroke="rgba(60,40,15,0.55)" stroke-width="1" />
+      <circle cx="60" cy="60" r="53.5" fill="none" stroke="rgba(255,235,190,0.35)" stroke-width="0.6" />
+      <g v-for="screw in screws" :key="screw.a" :transform="`translate(${screw.x} ${screw.y})`">
+        <circle r="2.6" fill="#3a2a12" />
+        <circle r="2.2" :fill="`url(#screw-${uid})`" />
+        <line x1="-1.6" y1="0" x2="1.6" y2="0" stroke="#2b1f0c" stroke-width="0.8" :transform="`rotate(${screw.a})`" />
+      </g>
       <circle cx="60" cy="60" r="51" fill="#151412" />
       <circle cx="60" cy="60" r="49" :fill="`url(#face-${uid})`" class="gauge__face" />
+      <!-- Aged paper vignette -->
+      <circle cx="60" cy="60" r="49" :fill="`url(#age-${uid})`" />
       <path :d="arc(redFrom, redTo, 42)" class="gauge__zone" />
       <line v-for="tick in ticks" :key="tick.i" v-bind="tick.line" class="gauge__tick" :class="{ major: tick.major }" />
-      <text x="60" y="44" class="gauge__label">{{ label }}</text>
-      <text x="60" y="88" class="gauge__unit">{{ on ? readout : '---' }}</text>
-      <g class="gauge__needle" :style="{ transform: `rotate(${angle}deg)` }">
-        <path d="M58.6 62 L60 18 L61.4 62 Z" fill="#b3261e" />
-        <path d="M59 62 L60 72 L61 62 Z" fill="#222" />
+      <text v-for="n in numerals" :key="n.label" :x="n.x" :y="n.y" class="gauge__numeral">{{ n.label }}</text>
+      <text x="60" y="47" class="gauge__label">{{ label }}</text>
+      <text x="60" y="90" class="gauge__unit">{{ on ? readout : '---' }}</text>
+      <!-- Needle shadow cast on the face, then the needle -->
+      <g class="gauge__needle gauge__needle--shadow" :style="{ transform: `translate(1.6px, 2.4px) rotate(${angle}deg)` }">
+        <path d="M58.6 62 L60 17 L61.4 62 Z" />
       </g>
-      <circle cx="60" cy="60" r="6" fill="#2a2724" />
-      <circle cx="60" cy="60" r="2.5" fill="#8b867c" />
-      <!-- Glass glare -->
-      <path d="M22 42 A42 42 0 0 1 88 20 A50 50 0 0 0 22 42 Z" fill="rgba(255,255,255,0.35)" />
+      <g class="gauge__needle" :style="{ transform: `rotate(${angle}deg)` }">
+        <path d="M58.6 62 L60 17 L61.4 62 Z" fill="#b3261e" />
+        <path d="M60 17 L61.4 62 L60 62 Z" fill="#7d1510" />
+        <path d="M58.8 62 L60 73 L61.2 62 Z" fill="#1d1b19" />
+      </g>
+      <circle cx="60" cy="60" r="6.5" :fill="`url(#hub-${uid})`" />
+      <circle cx="60" cy="60" r="2" fill="#1b1917" />
+      <!-- Domed glass: broad glare and a small hotspot -->
+      <path d="M20 44 A42 42 0 0 1 90 20 A52 52 0 0 0 20 44 Z" fill="rgba(255,255,255,0.32)" />
+      <ellipse cx="42" cy="30" rx="7" ry="3" fill="rgba(255,255,255,0.35)" transform="rotate(-30 42 30)" />
+      <circle cx="60" cy="60" r="49" fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="3" />
     </svg>
   </div>
 </template>
@@ -69,6 +101,17 @@ const ticks = Array.from({ length: 21 }, (_, i) => {
     major,
     line: { x1: 60 + Math.cos(a) * r1, y1: 60 + Math.sin(a) * r1, x2: 60 + Math.cos(a) * 46, y2: 60 + Math.sin(a) * 46 }
   };
+});
+
+const screws = [45, 135, 225, 315].map((deg, i) => ({
+  a: (uid.length * 37 + i * 61) % 180,
+  x: 60 + Math.cos((deg * Math.PI) / 180) * 56,
+  y: 60 + Math.sin((deg * Math.PI) / 180) * 56
+}));
+
+const numerals = [0, 5, 10].map((n) => {
+  const a = ((START + (SWEEP * n) / 10 - 90) * Math.PI) / 180;
+  return { label: n, x: 60 + Math.cos(a) * 29, y: 60 + Math.sin(a) * 29 + 3 };
 });
 
 function arc(from, to, r) {
@@ -122,7 +165,7 @@ onBeforeUnmount(clearTimers);
   width: 100%;
   max-width: 132px;
   aspect-ratio: 1;
-  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.7));
 }
 
 .gauge__dial {
@@ -136,8 +179,22 @@ onBeforeUnmount(clearTimers);
   filter: brightness(0.45);
 }
 
+// Warm backlight when powered
 .gauge.is-on .gauge__face {
-  filter: brightness(1) drop-shadow(0 0 6px rgba(255, 220, 150, 0.4));
+  filter: brightness(1.04) sepia(0.12);
+}
+
+.gauge__numeral {
+  font-family: var(--font-stencil);
+  font-weight: 700;
+  font-size: 8px;
+  fill: #2c261d;
+  text-anchor: middle;
+}
+
+.gauge__needle--shadow {
+  fill: rgba(0, 0, 0, 0.28);
+  filter: blur(0.8px);
 }
 
 .gauge__zone {

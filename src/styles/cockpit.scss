@@ -1,10 +1,12 @@
+@use 'textures';
+
 // Design tokens and shared primitives of the cockpit.
 // Components use these classes/variables and keep their own specific styling scoped.
 
 :root {
   --bg: #0a0d0c;
-  --panel: #3a4842;
-  --panel-light: #4c5d55;
+  --panel: #3b4943;
+  --panel-light: #52645b;
   --panel-dark: #242e2a;
   --panel-deep: #161c1a;
   --plate: #e4d9bc;
@@ -63,54 +65,226 @@ button {
   color: inherit;
 }
 
-// Painted metal panel with bevel and screws in the corners
+// Painted steel panel: paint grain, scratches, grime, light falloff from the
+// cabin ceiling, bevelled edges and a mounting seam around the plate.
 .panel {
   position: relative;
+  isolation: isolate;
   background:
-    radial-gradient(circle at 10px 10px, #9aa39f 0 2px, #2b322f 2.5px 3.5px, transparent 4px),
-    radial-gradient(circle at calc(100% - 10px) 10px, #9aa39f 0 2px, #2b322f 2.5px 3.5px, transparent 4px),
-    radial-gradient(circle at 10px calc(100% - 10px), #9aa39f 0 2px, #2b322f 2.5px 3.5px, transparent 4px),
-    radial-gradient(circle at calc(100% - 10px) calc(100% - 10px), #9aa39f 0 2px, #2b322f 2.5px 3.5px, transparent 4px),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
-    linear-gradient(170deg, var(--panel-light), var(--panel) 35%, var(--panel-dark));
+    var(--tex-scratches),
+    var(--tex-grain-light),
+    var(--tex-grain-dark),
+    var(--tex-grime),
+    radial-gradient(ellipse 120% 70% at 30% -10%, rgba(255, 255, 240, 0.1), transparent 60%),
+    radial-gradient(ellipse 100% 60% at 50% 120%, rgba(0, 0, 0, 0.35), transparent 70%),
+    linear-gradient(172deg, var(--panel-light), var(--panel) 38%, var(--panel-dark));
+  background-size: 400px 400px, 256px 256px, 256px 256px, 512px 512px, auto, auto, auto;
   border-radius: 10px;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.45),
-    0 0 0 1px #0d110f,
-    0 6px 14px rgba(0, 0, 0, 0.6);
+    inset 1px 1px 0 rgba(255, 255, 255, 0.16),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.55),
+    inset 0 0 0 3px rgba(0, 0, 0, 0.08),
+    inset 0 0 18px rgba(0, 0, 0, 0.35),
+    0 0 0 1px #040505,
+    0 0 0 3px #111614,
+    0 0 0 4px rgba(255, 255, 255, 0.03),
+    0 10px 22px rgba(0, 0, 0, 0.65);
+
+  // Chipped paint along the edges, revealing bare metal
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow:
+      inset 0 0 0 2px rgba(190, 200, 192, 0.35),
+      inset 0 0 0 5px rgba(160, 170, 162, 0.1);
+    -webkit-mask: var(--tex-wear-mask);
+    mask: var(--tex-wear-mask);
+  }
 }
 
-// Recessed area holding controls
+// Recessed pocket holding controls, with a lip catching the light
 .well {
-  background: linear-gradient(180deg, #1b2320, #232d29);
+  position: relative;
+  background:
+    var(--tex-grain-dark),
+    linear-gradient(180deg, #151b18, #1f2824 55%, #252f2b);
   border-radius: 8px;
   box-shadow:
-    inset 0 2px 6px rgba(0, 0, 0, 0.7),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+    inset 0 3px 7px rgba(0, 0, 0, 0.75),
+    inset 0 1px 1px rgba(0, 0, 0, 0.9),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.07),
+    0 1px 0 rgba(255, 255, 255, 0.09),
+    0 -1px 0 rgba(0, 0, 0, 0.5);
 }
 
-// Engraved cream label plate
+// Slotted (Phillips) screw head, rotation set with --a
+.screw {
+  position: absolute;
+  width: var(--s, 9px);
+  height: var(--s, 9px);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, #f1f4f2 0, #a9b1ad 28%, #5b625e 62%, #2c312e 100%);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.7),
+    0 1px 2px 1px rgba(0, 0, 0, 0.55),
+    0 -1px 0 1px rgba(255, 255, 255, 0.06),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 72%;
+    height: max(1.4px, calc(var(--s, 9px) * 0.17));
+    border-radius: 1px;
+    background: linear-gradient(180deg, #111413, #3c423f);
+    box-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.35);
+    transform: translate(-50%, -50%) rotate(var(--a, 20deg));
+  }
+
+  &::after {
+    transform: translate(-50%, -50%) rotate(calc(var(--a, 20deg) + 90deg));
+  }
+}
+
+// Row of domed rivets (use on a positioned strip)
+.rivets {
+  pointer-events: none;
+  background: radial-gradient(
+      circle at 45% 40%,
+      #d9dfdb 0 0.8px,
+      #8e9793 1.8px,
+      #454c48 3px,
+      #1d2220 3.6px,
+      rgba(0, 0, 0, 0.35) 4.3px,
+      transparent 5px
+    )
+    center / var(--rivet-gap, 34px) 100% repeat-x;
+}
+
+// Slotted ventilation grille
+.vent {
+  border-radius: 5px;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 3px,
+      #040505 3px 4px,
+      #0b0e0d 4px 7px,
+      rgba(255, 255, 255, 0.1) 7px 8px,
+      transparent 8px 11px
+    ),
+    linear-gradient(180deg, #1a211e, #232c28);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.7),
+    0 1px 0 rgba(255, 255, 255, 0.07);
+  -webkit-mask: linear-gradient(90deg, transparent 0 6px, #000 6px calc(100% - 6px), transparent calc(100% - 6px));
+  mask: linear-gradient(90deg, transparent 0 6px, #000 6px calc(100% - 6px), transparent calc(100% - 6px));
+}
+
+// Perforated speaker grille
+.grille {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #030404 0 1.3px, rgba(255, 255, 255, 0.06) 1.6px, transparent 2.1px) 0 0 / 6px 6px,
+    radial-gradient(circle at 35% 30%, #3b4642, #1c2321 70%);
+  box-shadow:
+    0 0 0 2px #0c0f0e,
+    0 0 0 4px #56615c,
+    0 0 0 5px #0c0f0e,
+    inset 0 3px 6px rgba(0, 0, 0, 0.7),
+    0 3px 6px rgba(0, 0, 0, 0.6);
+}
+
+// Printed markings on the paint
+.decal {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  line-height: 1.2;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(228, 217, 188, 0.34);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+// Yellow warning sticker, slightly worn
+.decal--warning {
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: #1c1605;
+  font-weight: 700;
+  text-shadow: none;
+  background:
+    var(--tex-grain-dark),
+    linear-gradient(180deg, #f1cf4a, #d9ad1f);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 2px rgba(241, 207, 74, 0.9),
+    inset 0 0 0 3px rgba(0, 0, 0, 0.5),
+    0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+// Engraved cream label plate with two tiny rivets
 .plate {
+  position: relative;
   display: inline-block;
-  padding: 1px 8px 0;
-  background: linear-gradient(180deg, #efe6cb, var(--plate) 60%, #cbbf9f);
+  padding: 2px 11px 1px;
+  background:
+    var(--tex-grain-dark),
+    linear-gradient(180deg, #f3ead0, var(--plate) 55%, #c7ba98);
   color: var(--plate-ink);
   font-family: var(--font-stencil);
   font-weight: 700;
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
   border-radius: 2px;
   box-shadow:
-    0 1px 0 rgba(0, 0, 0, 0.6),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+    0 1px 1px rgba(0, 0, 0, 0.7),
+    0 2px 3px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
   white-space: nowrap;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 3px;
+    height: 3px;
+    margin-top: -1.5px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff, #8a826c 60%, #3b3628);
+    box-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.4);
+  }
+
+  &::before {
+    left: 3px;
+  }
+
+  &::after {
+    right: 3px;
+  }
 }
 
 .plate--dark {
-  background: linear-gradient(180deg, #2a2a26, #151513);
+  background:
+    var(--tex-grain-light),
+    linear-gradient(180deg, #34332e, #171714);
   color: var(--plate);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.8);
 }
 
 .stencil {
@@ -120,9 +294,13 @@ button {
   text-transform: uppercase;
 }
 
-// Hazard stripes
+// Worn hazard stripes
 .hazard {
-  background: repeating-linear-gradient(-45deg, var(--hazard) 0 8px, #1a1a1a 8px 16px);
+  background:
+    var(--tex-scratches),
+    var(--tex-grain-dark),
+    repeating-linear-gradient(-45deg, var(--hazard) 0 8px, #1a1a1a 8px 16px);
+  background-size: 400px 400px, 256px 256px, auto;
 }
 
 @keyframes blink {

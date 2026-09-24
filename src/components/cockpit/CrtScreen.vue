@@ -1,5 +1,6 @@
 <template>
   <div class="crt" :class="[`crt--${tone}`, { 'is-on': on }]" :style="{ '--d': delay }">
+    <Screws :size="5" :inset="3" />
     <div class="crt__glass">
       <div class="crt__content">
         <slot />
@@ -9,6 +10,8 @@
 </template>
 
 <script setup>
+import Screws from './Screws.vue';
+
 defineProps({
   tone: { type: String, default: 'green' },
   on: { type: Boolean, default: false },
@@ -24,13 +27,20 @@ defineProps({
   --screen: var(--crt-green-bg);
   position: relative;
   height: 100%;
-  padding: 7px;
+  padding: 10px;
   border-radius: 16px;
-  background: linear-gradient(160deg, #3a3f3c, #121513 60%, #262a28);
+  // Molded bakelite bezel
+  background:
+    var(--tex-grain-light),
+    var(--tex-grain-dark),
+    radial-gradient(ellipse 120% 60% at 30% 0%, rgba(255, 255, 255, 0.12), transparent 60%),
+    linear-gradient(160deg, #3b403d, #1b1e1c 55%, #111312);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.8),
-    0 3px 8px rgba(0, 0, 0, 0.7);
+    0 0 0 1px #050606,
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 1px 0 0 rgba(255, 255, 255, 0.06),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.7),
+    0 4px 10px rgba(0, 0, 0, 0.7);
 }
 
 .crt--amber {
@@ -45,7 +55,14 @@ defineProps({
   overflow: hidden;
   border-radius: 12px / 16px;
   background: #070908;
-  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.9);
+  // Chamfered lip between bezel and tube, then the tube depth
+  box-shadow:
+    0 0 0 1px #000,
+    0 0 0 3px #262a28,
+    0 1px 0 3px rgba(255, 255, 255, 0.1),
+    0 -1px 0 3px rgba(0, 0, 0, 0.6),
+    inset 0 0 22px rgba(0, 0, 0, 0.95),
+    inset 0 3px 6px rgba(0, 0, 0, 0.8);
   transition: background 0.4s var(--d);
 
   // Scanlines

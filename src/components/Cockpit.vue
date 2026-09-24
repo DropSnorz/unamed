@@ -3,22 +3,30 @@
     <!-- Canopy: window on space, flanked by instrument pillars -->
     <section class="canopy">
       <div class="pillar panel" style="--d: 0.2s">
+        <Screws />
+        <span class="decal pillar__decal">INSTR. CLUSTER L</span>
         <Gauge label="REACTOR" :value="game.ship.reactor" :on="game.online" :delay="200" :red="[0.85, 1]" :jitter="0.015" />
         <Gauge label="FUEL" :value="game.ship.fuel" :on="game.online" :delay="400" />
+        <div class="vent pillar__vent" aria-hidden="true" />
       </div>
       <Viewport />
       <div class="pillar panel" style="--d: 0.3s">
+        <Screws />
+        <span class="decal pillar__decal">INSTR. CLUSTER R</span>
         <Gauge label="HULL" :value="game.ship.hull" :on="game.online" :delay="300" />
         <Gauge label="SHIELDS" :value="game.ship.systems.shields ? 1 : 0" :on="game.online" :delay="500" :red="[0, 0.1]" />
+        <div class="vent pillar__vent" aria-hidden="true" />
       </div>
     </section>
 
     <!-- Dashboard lip: caution lights and readouts -->
     <section class="dash panel">
+      <Screws />
       <div class="dash__annunciator" style="--d: 0.15s">
         <Annunciator :lights="annunciators" />
       </div>
       <div class="dash__readouts" style="--d: 0.5s">
+        <Screws :size="5" :inset="4" />
         <Nixie label="SECTOR X" :value="coordinate('x')" :digits="4" :on="game.online" />
         <Nixie label="SECTOR Y" :value="coordinate('y')" :digits="4" :on="game.online" />
         <Nixie label="JUMPS" :value="game.stats.jumps" :digits="3" :on="game.online" />
@@ -26,6 +34,7 @@
         <Nixie label="STARDATE" :value="game.stats.stardate.toFixed(1)" :digits="6" :on="game.online" />
       </div>
       <div class="dash__maker">
+        <Screws :size="5" :inset="3" />
         <img class="dash__logo" src="../assets/space.png" alt="" />
         <div>
           <div class="stencil dash__brand">UNAMED</div>
@@ -38,6 +47,8 @@
     <!-- Main console -->
     <section class="console">
       <div ref="terminalBay" class="bay bay--terminal panel">
+        <Screws />
+        <span class="decal bay__decal">TTY-1 · 24V DC · SERVICE HATCH BELOW</span>
         <div class="bay__terminal">
           <Terminal />
         </div>
@@ -68,15 +79,20 @@
             title="Clear the terminal (clear)"
             @press="run('clear')"
           />
+          <div class="grille bay__speaker" aria-hidden="true" />
           <ToggleSwitch label="AUDIO" :on="cockpit.audio" lamp-color="amber" @toggle="toggleAudio" />
         </div>
       </div>
 
       <div class="bay bay--nav panel" style="--d: 0.45s">
+        <Screws />
+        <span class="decal bay__decal">NAV-2 DISPLAY UNIT · CAL 07/2291</span>
         <NavScreen />
       </div>
 
       <div class="bay bay--controls panel">
+        <Screws />
+        <span class="decal bay__decal">FLIGHT CTRL · SN 4471-B</span>
         <div class="controls__nav">
           <div class="controls__signatures">
             <SignaturePanel />
@@ -91,6 +107,7 @@
         </div>
 
         <div class="controls__flight well" style="--d: 0.9s">
+          <span class="decal decal--warning controls__warning">⚠ Arm jump drive in open space only</span>
           <PushButton
             color="amber"
             label="SCAN"
@@ -141,6 +158,7 @@ import PushButton from './cockpit/PushButton.vue';
 import RotaryKnob from './cockpit/RotaryKnob.vue';
 import SignaturePanel from './cockpit/SignaturePanel.vue';
 import ToggleSwitch from './cockpit/ToggleSwitch.vue';
+import Screws from './cockpit/Screws.vue';
 import Viewport from './cockpit/Viewport.vue';
 import Terminal from './terminal/Terminal.vue';
 import { useGameStore } from '../stores/game';
@@ -241,8 +259,20 @@ watch(
   }
 );
 
+// Freeze the app height in pixels: a virtual keyboard opening (height-only resize
+// while the terminal input is focused) must not squeeze the cockpit.
+let lastWidth = 0;
+function updateAppHeight() {
+  const typing = document.activeElement?.matches('input, textarea');
+  if (typing && window.innerWidth === lastWidth) return;
+  lastWidth = window.innerWidth;
+  document.documentElement.style.setProperty('--app-h', `${window.innerHeight}px`);
+}
+
 let observer;
 onMounted(() => {
+  updateAppHeight();
+  window.addEventListener('resize', updateAppHeight);
   updateSpotlight();
   observer = new ResizeObserver(updateSpotlight);
   observer.observe(root.value);
@@ -252,6 +282,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   observer?.disconnect();
+  window.removeEventListener('resize', updateAppHeight);
   window.removeEventListener('pointerdown', unlock);
   window.removeEventListener('keydown', unlock);
 });
@@ -261,14 +292,18 @@ onBeforeUnmount(() => {
 .cockpit {
   position: relative;
   display: grid;
-  grid-template-rows: minmax(170px, 36vh) auto minmax(0, 1fr);
+  grid-template-rows: minmax(170px, calc(var(--app-h, 100vh) * 0.36)) auto minmax(0, 1fr);
   gap: 8px;
   height: 100%;
   padding: 8px;
   overflow: hidden;
+  // Bare gunmetal chassis the panels are bolted on
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(80, 110, 100, 0.18), transparent 60%),
-    linear-gradient(180deg, #0e1312, #070908);
+    var(--tex-grain-light),
+    var(--tex-grain-dark),
+    radial-gradient(ellipse at 50% 0%, rgba(80, 110, 100, 0.16), transparent 60%),
+    repeating-linear-gradient(90deg, transparent 0 46px, rgba(0, 0, 0, 0.35) 46px 48px, rgba(255, 255, 255, 0.025) 48px 49px),
+    linear-gradient(180deg, #111716, #080a09);
 }
 
 // ---- Canopy ----
@@ -281,6 +316,7 @@ onBeforeUnmount(() => {
 }
 
 .pillar {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -290,8 +326,57 @@ onBeforeUnmount(() => {
   min-height: 0;
 
   :deep(.gauge) {
-    max-width: min(128px, 16vh);
+    max-width: min(128px, calc(var(--app-h, 100vh) * 0.16));
   }
+}
+
+.pillar__decal {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 7px;
+}
+
+.pillar__vent {
+  display: none;
+  width: 90px;
+  height: 34px;
+  flex: none;
+}
+
+@media (min-height: 900px) {
+  .pillar__vent {
+    display: block;
+  }
+}
+
+.bay__decal {
+  position: absolute;
+  bottom: 3px;
+  left: 22px;
+  font-size: 7px;
+}
+
+.bay__speaker {
+  display: none;
+  flex: none;
+  width: 54px;
+  height: 54px;
+}
+
+@media (min-height: 880px) {
+  .bay__speaker {
+    display: block;
+  }
+}
+
+.controls__warning {
+  position: absolute;
+  top: -7px;
+  left: 12px;
+  font-size: 7px;
+  letter-spacing: 0.1em;
 }
 
 // ---- Dashboard lip ----
@@ -312,18 +397,33 @@ onBeforeUnmount(() => {
 }
 
 .dash__readouts {
+  position: relative;
   display: flex;
   gap: 10px;
+  padding: 7px 16px 5px;
+  border-radius: 5px;
+  background:
+    var(--tex-grain-light),
+    linear-gradient(180deg, #1c201e, #0d0f0e);
+  box-shadow:
+    0 0 0 1px #000,
+    0 0 0 3px #3e4743,
+    0 1px 0 3px rgba(255, 255, 255, 0.12),
+    inset 0 2px 5px rgba(0, 0, 0, 0.9);
 }
 
 .dash__maker {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 12px;
+  padding: 7px 16px;
   border-radius: 4px;
   color: #2b2113;
-  background: linear-gradient(160deg, #e3c68a, var(--brass) 45%, #8a6a36);
+  background:
+    var(--tex-brushed),
+    var(--tex-grain-dark),
+    linear-gradient(160deg, #ecd39c, var(--brass) 45%, #8a6a36);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
     0 2px 4px rgba(0, 0, 0, 0.6);
@@ -505,11 +605,11 @@ onBeforeUnmount(() => {
 // ---- Short screens (laptops): smaller canopy and denser controls ----
 @media (max-height: 820px) and (min-width: 1101px) {
   .cockpit {
-    grid-template-rows: minmax(150px, 29vh) auto minmax(0, 1fr);
+    grid-template-rows: minmax(150px, calc(var(--app-h, 100vh) * 0.29)) auto minmax(0, 1fr);
   }
 
   .pillar :deep(.gauge) {
-    max-width: min(128px, 12.5vh);
+    max-width: min(128px, calc(var(--app-h, 100vh) * 0.125));
   }
 
   .bay {
@@ -527,6 +627,14 @@ onBeforeUnmount(() => {
   .controls__aux {
     padding: 16px 4px 6px;
   }
+
+  .controls__knob {
+    gap: 6px;
+
+    :deep(.knob) {
+      --knob: 66px;
+    }
+  }
 }
 
 // ---- Smaller screens: stack everything, keep the terminal reachable ----
@@ -540,7 +648,7 @@ onBeforeUnmount(() => {
   .cockpit {
     height: auto;
     min-height: 100%;
-    grid-template-rows: 34vh auto auto;
+    grid-template-rows: calc(var(--app-h, 100vh) * 0.34) auto auto;
   }
 
   .dash {
@@ -558,7 +666,7 @@ onBeforeUnmount(() => {
   .bay--terminal {
     grid-column: 1 / -1;
     order: 3;
-    height: 60vh;
+    height: calc(var(--app-h, 100vh) * 0.6);
   }
 
   .bay--nav,
@@ -592,7 +700,7 @@ onBeforeUnmount(() => {
 
   .bay__terminal {
     flex: none;
-    height: 55vh;
+    height: calc(var(--app-h, 100vh) * 0.55);
   }
 
   .bay__side {

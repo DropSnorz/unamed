@@ -62,6 +62,9 @@ function syncCaret() {
   caret.value = field.value?.selectionStart ?? terminal.input.length;
 }
 
+// On touch devices focusing the input opens the virtual keyboard: only do it on an explicit tap
+const touch = window.matchMedia('(pointer: coarse)').matches;
+
 function focus() {
   // Do not steal the focus when the player selects text to copy it
   if (window.getSelection()?.toString()) return;
@@ -128,7 +131,7 @@ watch(
 watch(
   () => terminal.busy,
   (busy) => {
-    if (!busy) nextTick(() => document.activeElement === document.body && focus());
+    if (!busy && !touch) nextTick(() => document.activeElement === document.body && focus());
   }
 );
 
@@ -161,7 +164,7 @@ onMounted(() => {
   observer.observe(screen.value, { childList: true, subtree: true, characterData: true });
   screen.value.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('keydown', onWindowKeydown);
-  focus();
+  if (!touch) focus();
 });
 
 onBeforeUnmount(() => {
@@ -172,6 +175,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .terminal__body {
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -265,6 +269,13 @@ onBeforeUnmount(() => {
   color: transparent;
   background: transparent;
   outline: none;
+}
+
+// Narrow terminal: smaller type so scan tables do not wrap
+@container (max-width: 380px) {
+  .terminal__screen {
+    font-size: 15.5px;
+  }
 }
 
 .t-prompt {

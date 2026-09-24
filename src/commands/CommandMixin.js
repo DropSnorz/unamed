@@ -1,4 +1,5 @@
 export default {
+  inject: ['context'],
   data: function () {
     return {
       commandTick: 0,
@@ -23,7 +24,7 @@ export default {
     },
     
     isHelp(){
-      return this.context.parsed.h || this.context.parsed.help
+      return this.context.parsedQuery.h || this.context.parsedQuery.help
     }
   }
 }

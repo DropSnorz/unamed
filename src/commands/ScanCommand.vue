@@ -50,7 +50,7 @@ import playerJournal from './../game/PlayerJournal';
 export default {
   name: 'ScanCommand',
   mixins: [CommandMixin],
-  inject: ['terminate'],
+  inject: ['exit'],
   data: function() {
     return {
       planets: [],
@@ -63,7 +63,7 @@ export default {
   mounted() {
     this.$nextTick(function() {
       if(this.isHelp()){
-        this.terminate();
+        this.exit();
         return;
       }
       this.startCommand(900);
@@ -94,7 +94,7 @@ export default {
   watch: {
     commandCompleted: function() {
       if (this.commandCompleted) {
-        this.terminate();
+        this.exit();
       }
     }
   }

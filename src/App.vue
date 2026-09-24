@@ -1,10 +1,10 @@
 <template>
-  <div id="app" class="container-fluid wrapper" style="height:100%;">
+  <div class="container-fluid wrapper" style="height:100%;">
     <div class="row" style="height:100%;">
       <div class="col-md-10 p-0" style="height:100%;">
         <Console />
       </div>
-      <nav class="col-md-2 sidebar d-xs-none d-xs-none d-sm-none d-md-block">
+      <nav class="col-md-2 sidebar d-sm-none d-md-block">
         <img class="logo rounded-circle mt-5" alt="space" src="./assets/space.png" />
         <h1 class="mt-3">Unamed</h1>
         <div class="sidebar-footer">
@@ -28,7 +28,8 @@ export default {
 
 <style>
 html,
-body {
+body,
+#app {
   height: 100%;
 }
 

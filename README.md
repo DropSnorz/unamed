@@ -7,7 +7,7 @@ npm install
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+npm run dev
 ```
 
 ### Compiles and minifies for production
@@ -15,15 +15,15 @@ npm run serve
 npm run build
 ```
 
-### Run your tests
+### Preview the production build locally
 ```
-npm run test
+npm run preview
 ```
 
-### Lints and fixes files
+### Lints files
 ```
 npm run lint
 ```
 
 ### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+See the [Vite configuration reference](https://vite.dev/config/).

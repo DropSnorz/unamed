@@ -1,31 +1,40 @@
 <template>
   <div style="height:100%;">
     <vue-command
-      intro="Everything seems so empty..."
       :commands="commands"
-      :executed="new Set()"
-      show-intro
+      :history="history"
       show-help
       :title="prompt"
       :prompt="prompt"
       :help-text="help"
-      ref="vueCommand"
+      :parser="parser"
     />
   </div>
 </template>
 
 <script>
-import VueCommand, { createStdout } from 'vue-command';
+import VueCommand, { createStdout, createQuery } from 'vue-command';
 import 'vue-command/dist/vue-command.css';
+import getopts from 'getopts';
+import { useWorldStore } from './../store/world';
+import { usePlayerStore } from './../store/player';
 
 export default {
   name: 'Console',
   components: {
     VueCommand
   },
+  data() {
+    return {
+      history: [
+        createStdout('Everything seems so empty...'),
+        createQuery()
+      ]
+    };
+  },
   computed: {
     commands() {
-      if (!this.$store.state.world.initiated) {
+      if (!useWorldStore().initiated) {
         return {
           // yargs arguments
           init: async () =>
@@ -53,27 +62,21 @@ export default {
       };
     },
     prompt() {
-      let prompt
-      if (this.$store.state.player.currentSystem) {
-        prompt = 'u@' + this.$store.state.player.currentSystem + ':#';
-        this.forcePrompt(prompt)
-        return prompt;
+      if (usePlayerStore().currentSystem) {
+        return 'u@' + usePlayerStore().currentSystem + ':#';
       }
       return 'root@world';
-
     },
     help() {
-      if (!this.$store.state.world.initiated) {
+      if (!useWorldStore().initiated) {
         return 'Type \'init\' to start playing or \'help\' for details'
       }
       return 'Type help'
     }
   },
-  methods : {
-    forcePrompt: function(prompt) {
-        const stdins = this.$refs.vueCommand.$refs.stdin
-        const lastStdin = stdins[stdins.length - 1]
-        lastStdin.setPrompt(prompt)
+  methods: {
+    parser(query) {
+      return getopts(query.trim().split(/\s+/));
     }
   }
 };
@@ -82,16 +85,17 @@ export default {
 <style lang="scss">
 .vue-command {
   height: 100%;
-  display: flex; 
-  flex-direction: column; 
+  display: flex;
+  flex-direction: column;
   background: #111;
 
-  .term-bar {
+  .vue-command__bar {
     background: #0a0f11;
   }
-  .term {
+  .vue-command__history {
     display: flex;
     flex: 1;
+    flex-direction: column;
     overflow-y: scroll;
   }
 }

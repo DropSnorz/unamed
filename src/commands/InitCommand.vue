@@ -52,11 +52,13 @@ import ClusterGenerator from './../game/ClusterGenerator';
 import CommandMixin from './CommandMixin';
 import clusterWalker from './../game/ClusterWalker';
 import clusterRuleSet from './../game/RuleSet';
+import { usePlayerStore } from './../store/player';
+import { useWorldStore } from './../store/world';
 
 export default {
   name: 'InitCommand',
   mixins: [CommandMixin],
-  inject: ['terminate'],
+  inject: ['exit'],
   data: function() {
     return {
       clusterGenerationTime: null,
@@ -67,24 +69,24 @@ export default {
   },
   computed: {
     seed: function() {
-      return this.context.parsed.seed ? this.context.parsed.seed : '?';
+      return this.context.parsedQuery.seed ? this.context.parsedQuery.seed : '?';
     }
   },
   mounted() {
     this.$nextTick(function() {
       if (this.isHelp()) {
-        this.terminate();
+        this.exit();
         return;
       }
 
       let r = clusterRuleSet();
-      if (this.context.parsed.size) {
-        r.cluster.size.min = this.context.parsed.size;
-        r.cluster.size.max = this.context.parsed.size;
+      if (this.context.parsedQuery.size) {
+        r.cluster.size.min = this.context.parsedQuery.size;
+        r.cluster.size.max = this.context.parsedQuery.size;
       }
 
       let generationStartTime = new Date().getTime();
-      let clusterGenerator = new ClusterGenerator(this.context.parsed.seed, r);
+      let clusterGenerator = new ClusterGenerator(this.context.parsedQuery.seed, r);
       let cluster = clusterGenerator.generate();
 
       this.clusterGenerationTime = (
@@ -102,11 +104,10 @@ export default {
 
       console.log(cluster);
 
-      this.$store.dispatch(
-        'player/setCurrentSystem',
+      usePlayerStore().setCurrentSystem(
         cluster.constellations[0].systems[0].name
       );
-      this.$store.dispatch('world/initiate', true);
+      useWorldStore().initiate(true);
       clusterWalker.setCluster(cluster);
       clusterWalker.walk(cluster.constellations[0].systems[0]);
 
@@ -116,7 +117,7 @@ export default {
   watch: {
     commandCompleted: function() {
       if (this.commandCompleted) {
-        this.terminate();
+        this.exit();
       }
     }
   }

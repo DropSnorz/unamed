@@ -28,30 +28,31 @@
 <script>
 import CommandMixin from './CommandMixin';
 import clusterWalker from './../game/ClusterWalker';
+import { usePlayerStore } from './../store/player';
 export default {
   name: 'JumpCommand',
   mixins: [CommandMixin],
-  inject: ['terminate'],
-  data: function() {
+  inject: ['exit'],
+  data: function () {
     return {
       error: false
     };
   },
   computed: {
-    jumpTarget: function() {
-      return this.context.parsed._[1];
+    jumpTarget: function () {
+      return this.context.parsedQuery._[1];
     }
   },
   mounted() {
-    this.$nextTick(function() {
+    this.$nextTick(function () {
       if (this.isHelp()) {
-        this.terminate();
+        this.exit();
         return;
       }
       let currentSystem = clusterWalker.getCurrentSystem();
       for (let system of currentSystem.constellation.systems) {
         if (system.name == this.jumpTarget) {
-          this.$store.dispatch('player/setCurrentSystem', system.name);
+          usePlayerStore().setCurrentSystem(system.name);
           clusterWalker.walk(system);
           this.startCommand(4000);
 
@@ -60,23 +61,20 @@ export default {
       }
       for (let constellation of currentSystem.constellation.paths) {
         if (constellation.name == this.jumpTarget) {
-          this.$store.dispatch(
-            'player/setCurrentSystem',
-            constellation.systems[0].name
-          );
+          usePlayerStore().setCurrentSystem(constellation.systems[0].name);
           clusterWalker.walk(constellation.systems[0]);
           this.startCommand(4000);
           return;
         }
       }
       this.error = 'Unknown jump target ' + this.jumpTarget;
-      this.terminate();
+      this.exit();
     });
   },
   watch: {
-    commandCompleted: function() {
+    commandCompleted: function () {
       if (this.commandCompleted) {
-        this.terminate();
+        this.exit();
       }
     }
   }

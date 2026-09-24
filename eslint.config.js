@@ -18,7 +18,7 @@ export default [
       }
     },
     rules: {
-      quotes: ['error', 'single'],
+      quotes: ['error', 'single', { avoidEscape: true }],
       'vue/multi-word-component-names': 'off'
     }
   }

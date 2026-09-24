@@ -17,6 +17,8 @@ jobs:
         node-version: '22'
     - run: |
         npm ci
+        npm run lint
+        npm test
         npm run build
     - name: deploy
       uses: peaceiris/actions-gh-pages@v4

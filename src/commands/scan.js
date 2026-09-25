@@ -44,7 +44,7 @@ export default {
         `${planet.orbit.toFixed(2)} AU`,
         `${planet.temperature} K`,
         planet.moons ? `${planet.moons} moon${planet.moons > 1 ? 's' : ''}` : ''
-      ], [5, 10, 9, 7, 8]));
+      ], [5, 10, 11, 8, 8]));
     }
 
     print('Reachable stars', 'head');
